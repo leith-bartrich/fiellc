@@ -7,6 +7,7 @@ import fiepipelib.localplatform
 import fiepipelib.localuser
 import pkg_resources
 import cmd2
+import functools
 
 def plugintest(self, args):
     """Test plugin command.
@@ -16,7 +17,7 @@ def plugintest(self, args):
 def fiepipeShellPlugin(shell):
     assert isinstance(shell, fiepipelib.shells.fiepipe.Shell)
     shell.__class__.do_plugintest = plugintest
-    shell.__class__.complete_plugintest = cmd2.path_complete
+    shell.__class__.complete_plugintest = functools.partial(cmd2.path_complete)
 
 
 def main():
