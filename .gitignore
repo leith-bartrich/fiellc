@@ -1,0 +1,8 @@
+.vs/fiepipe/v15/.suo
+**/__pycache__
+**/__pycache__/**
+*.pyc
+**/*.egg-info
+**/*.egg-info/**
+.vscode
+*.pyproj
