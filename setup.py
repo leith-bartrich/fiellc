@@ -16,7 +16,8 @@ setup(
     packages = ["fiellclib"],
     install_requires=["fiepipe"],
     entry_points={
-        'fiepipe.plugin.shell.fiepipe.v1' : 'fiellc = fiellc:fiepipeShellPlugin',
+        'fiepipe.plugin.shell.fiepipe.v1' : 'fiellc = fiellc:FreeCADFIEPipeShellPlugin',
+        'fiepipe.plugin.shell.localsite.v1' : 'fiellc = fiellc:FreeCADLocalSiteShellPlugin',
         'console_scripts': [
             'fiellc = fiellc:main',
         ],
