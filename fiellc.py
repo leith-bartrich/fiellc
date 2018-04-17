@@ -3,34 +3,40 @@ import fiepipe
 import fiellclib.registration
 import fiepipelib.shells.fiepipe
 import fiepipelib.shells.legalentity
+import fiepipelib.shells.gitasset
 import fiepipelib.localplatform
 import fiepipelib.localuser
 import pkg_resources
 import cmd2
 import functools
 import fiepipefreecad.commands.system
+import fiepipefreecad.commands.asset
 import types
+import fiepipefreecad.templates.util
 
 
 def FreeCADFIEPipeShellPlugin(shell:fiepipelib.shells.fiepipe.Shell):
-    shell.AddCommand("freecad_install_add",\
-                     fiepipefreecad.commands.system.AddFreeCAD,
-                     functools.partial(cmd2.path_complete))
-    shell.AddCommand("freecad_install_delete",\
-                     fiepipefreecad.commands.system.DeleteFreeCAD,\
-                     fiepipefreecad.commands.system.freecad_installs_complete)
+    shell.AddSubmenu(fiepipefreecad.commands.system.FreeCADSystemCommand(
+        shell._localUser), "freecad", [])
+    #shell.AddCommand("freecad_install_add",\\
+                     #fiepipefreecad.commands.system.AddFreeCAD,\
+                     #functools.partial(cmd2.path_complete))
+    #shell.AddCommand("freecad_install_delete",\
+                     #fiepipefreecad.commands.system.DeleteFreeCAD,\
+                     #fiepipefreecad.commands.system.freecad_installs_complete)
     
 
 def FreeCADLocalSiteShellPlugin(shell:fiepipelib.shells.legalentity.Shell):
-    #explanation: when using functools on a function for a target one must make sure they are
-    #wrapping a "method" so the "self" gets set correctly upon call.  Functools messes that up
-    #its own.
-    shell.AddCommand("launch_freecad",\
-                     functools.partial(
-                         types.MethodType(fiepipefreecad.commands.system.LaunchInteractive,shell)
-                         ),\
-                     fiepipefreecad.commands.system.freecad_installs_complete)
+    pass
     
+def FreeCADGitAssetShellPlugin(shell:fiepipelib.shells.gitasset.Shell):
+    shell.AddSubmenu(fiepipefreecad.commands.asset.PartDesignsCommand(shell), 'freecad_partdesigns', ['fc_pd'])
+
+def FreeCADPartDesignVersionsCommandPlugin(command:fiepipefreecad.commands.asset.PartDesignVersionsCommand):
+    templates = fiepipefreecad.templates.util.GetPackageTemplatesDict()
+    for k in templates.keys():
+        command.AddTemplate(k, templates[k])
+
 
 def main():
 

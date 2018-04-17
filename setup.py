@@ -18,6 +18,8 @@ setup(
     entry_points={
         'fiepipe.plugin.shell.fiepipe.v1' : 'fiellc = fiellc:FreeCADFIEPipeShellPlugin',
         'fiepipe.plugin.shell.localsite.v1' : 'fiellc = fiellc:FreeCADLocalSiteShellPlugin',
+        'fiepipe.plugin.shell.gitasset.v1' : 'fiellc = fiellc:FreeCADGitAssetShellPlugin',
+        'fiepipe.plugin.shell.freecad_part_design_versions_command.v1' : 'fiellc = fiellc:FreeCADPartDesignVersionsCommandPlugin',
         'console_scripts': [
             'fiellc = fiellc:main',
         ],
