@@ -1,5 +1,4 @@
-import fiepipelib.abstractmanager
-import types
+import fiepipelib.locallymanagedtypes.data.abstractmanager
 import fiepipelib.applauncher
 import os.path
 import subprocess
@@ -57,11 +56,13 @@ class FreeCAD(object):
         launcher = fiepipelib.applauncher.genericlauncher.listlauncher(args)
         launcher.launch(echo=True)
         
-    def ExecuteInConsoleMode(self, pythonPaths:list = [], modulesPaths:list = [], filepaths:list = []):
+    def ExecuteInConsoleMode(self, pythonPaths:list = [], modulesPaths:list = [], filepaths:list = [], block=True):
         """Executes a console mode version of this FreeCAD install.
         @arg pythonPaths: list of python paths
         @arg modulepaths: list of FreeCAD module paths
         @arg filepaths: list of files/scripts to open
+        @arg block: If true, the call will block until the process completes.
+        Returns the process.
         """
         args = []
         args.append(os.path.join(self._path,"bin","FreeCADCmd"))
@@ -69,7 +70,7 @@ class FreeCAD(object):
             args.append("-P")
             args.append(ppath)
             
-        for mpath in modulepaths:
+        for mpath in modulesPaths:
             args.append("-M")
             args.append(mpath)
             
@@ -77,9 +78,12 @@ class FreeCAD(object):
             args.append(fpath)
             
         print(" ".join(args))
-        subprocess.Popen(args)
+        proc = subprocess.Popen(args)
+        if block:
+            proc.wait()
+        return proc
 
-class FreeCADLocalManager(fiepipelib.abstractmanager.abstractlocalmanager):
+class FreeCADLocalManager(fiepipelib.locallymanagedtypes.data.abstractmanager.AbstractUserLocalTypeManager[FreeCAD]):
     
     
     def FromJSONData(self, data):

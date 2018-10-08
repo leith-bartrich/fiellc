@@ -1,14 +1,14 @@
-import fiepipelib.localplatform
-import fiepipelib.localuser
-import fiepipelib.registeredlegalentity
+import fiepipelib.localplatform.routines.localplatform
+import fiepipelib.localuser.routines.localuser
+import fiepipelib.legalentity.registry.data.registered_entity
 import fiepipelib.storage.localvolume
 import os.path
 import json
 
 def IsRegistered():
-    plat = fiepipelib.localplatform.GetLocalPlatform()
-    user = fiepipelib.localuser.localuser(plat)
-    registry = fiepipelib.registeredlegalentity.localregistry(user)
+    plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
+    user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
+    registry = fiepipelib.legalentity.registry.data.registered_entity.localregistry(user)
     entities = registry.GetByFQDN("fie.us")
     return len(entities) > 0
 
@@ -19,15 +19,15 @@ def Register():
     regFile = open(regPath)
     data = json.load(regFile)
     regFile.close()
-    registration = fiepipelib.registeredlegalentity.FromJSONData(data)
-    plat = fiepipelib.localplatform.GetLocalPlatform()
-    user = fiepipelib.localuser.localuser(plat)
-    registry = fiepipelib.registeredlegalentity.localregistry(user)
+    registration = fiepipelib.legalentity.registry.data.registered_entity.FromJSONData(data)
+    plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
+    user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
+    registry = fiepipelib.legalentity.registry.data.registered_entity.localregistry(user)
     registry.Set([registration])
 
 def SetupStandardVolumes():
-    plat = fiepipelib.localplatform.GetLocalPlatform()
-    user = fiepipelib.localuser.localuser(plat)
+    plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
+    user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
     registry = fiepipelib.storage.localvolume.localvolumeregistry(user)
     docsentries = registry.GetByName("docs")
     docsvolume = None

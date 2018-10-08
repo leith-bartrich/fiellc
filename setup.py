@@ -16,10 +16,12 @@ setup(
     packages = ["fiellclib"],
     install_requires=["fiepipe"],
     entry_points={
-        'fiepipe.plugin.shell.fiepipe.v1' : 'fiellc = fiellc:FreeCADFIEPipeShellPlugin',
-        'fiepipe.plugin.shell.localsite.v1' : 'fiellc = fiellc:FreeCADLocalSiteShellPlugin',
-        'fiepipe.plugin.shell.gitasset.v1' : 'fiellc = fiellc:FreeCADGitAssetShellPlugin',
-        'fiepipe.plugin.shell.freecad_part_design_versions_command.v1' : 'fiellc = fiellc:FreeCADPartDesignVersionsCommandPlugin',
+        'fiepipe.plugin.shell.fiepipe.v1' : 'fiellc = fiellc:FIEPipeShellPlugin',
+        'fiepipe.plugin.shell.gitasset.v1' : 'fiellc = fiellc:GitAssetShellPlugin',
+        'fiepipe.plugin.shell.all_single_file_representations_command.v1' : 'fiellc = fiellc:AllSingleFileRepresentationsCommand',
+        'fiepipe.plugin.shell.freecad_part_design_versions_command.v1' : 'fiellc = fiellc:FreeCADPartDesignVerionsCommand',
+        'fiepipe.plugin.shell.coat_workfile_versions_command.v1' : 'fiellc = fiellc:CoatWorkfileVersionsCommand',
+        'fiepipe.pluign.templates.file' : 'fiellc = fiellc:FileTemplates',
         'console_scripts': [
             'fiellc = fiellc:main',
         ],

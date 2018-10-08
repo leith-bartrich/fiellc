@@ -1,14 +1,16 @@
-import fiepipelib.shells.gitasset
+import fiepipelib.assetdata.shell.item
+import fiepipelib.filerepresentation.shell.item
+import fiepipelib.fileversion.shell.assetdata
+import fiepipelib.gitstorage.shells.gitasset
 import fiepipefreecad.data.partdesign
-import cmd2
 import pathlib
 import os
 import os.path
-import shutil
 import fiepipefreecad.commands.system
-import fiepipelib.shells.abstract
-import abc
 import fiepipelib.assetdata.shell
+import fiepipefreecad.scripts.util
+from fiepipelib.assetdata.data.items import AbstractItemsRelation,AbstractItemManager
+from fiepipelib.assetdata.data.connection import Connection, GetConnection
 
 def GetFreeCADFileExtension():
     return "FCStd"
@@ -26,8 +28,8 @@ def freecad_complete(text, line, begidx, endidx):
     return ret
 
 
-class AbstractFreeCADFileVersionsCommand(fiepipelib.assetdata.shell.AbstractSingleFileVersionCommand):
-    
+class AbstractFreeCADFileVersionsCommand(fiepipelib.fileversion.shell.assetdata.AbstractSingleFileVersionCommand):
+        
     def GetFileExtension(self):
         return GetFreeCADFileExtension()
 
@@ -80,7 +82,7 @@ class AbstractFreeCADFileVersionsCommand(fiepipelib.assetdata.shell.AbstractSing
             return
         
         fcman = fiepipefreecad.freecad.FreeCADLocalManager(self.GetAssetShell()._localUser)
-        freecads = fcman.GetByName(args[1])
+        freecads = fcman.get_by_name(args[1])
 
         if len(freecads) == 0:
             self.perror("No such freecad.")
@@ -91,7 +93,7 @@ class AbstractFreeCADFileVersionsCommand(fiepipelib.assetdata.shell.AbstractSing
         freecad.LaunchInteractive(filepaths=[version.GetAbsolutePath()])
 
 
-class PartDesignsCommand(fiepipelib.assetdata.shell.AbstractNamedTypeCommand):
+class PartDesignsCommand(fiepipelib.assetdata.shell.item.AbstractNamedItemCommand):
 
     def getPluginNameV1(self):
         return "freecad_part_designs_command"
@@ -112,8 +114,8 @@ class PartDesignsCommand(fiepipelib.assetdata.shell.AbstractNamedTypeCommand):
         return db.GetPartDesignManager()
     
     def DeleteItem(self, name:str, 
-                  man:fiepipelib.assetdata.abstractassetdata.abstractdatamanager, 
-                  conn:fiepipelib.assetdata.assetdatabasemanager.Connection):
+                  man:AbstractItemManager,
+                  conn:Connection):
         assert isinstance(man, fiepipefreecad.data.partdesign.PartDesignManager)
         man.DeleteByName(name, conn)
         
@@ -138,7 +140,7 @@ class PartDesignsCommand(fiepipelib.assetdata.shell.AbstractNamedTypeCommand):
         man = self.GetManager(db)
         db.AttachToConnection( conn)
 
-        if len(man.GetByName(args[0], conn)) != 0:
+        if len(man.get_by_name(args[0], conn)) != 0:
             self.perror("Already exists.")
             return
         
@@ -152,23 +154,23 @@ class PartDesignsCommand(fiepipelib.assetdata.shell.AbstractNamedTypeCommand):
         return item.GetName()
     
     def GetAllItems(self, 
-                   manager:fiepipelib.assetdata.abstractassetdata.abstractdatamanager, 
-                   conn:fiepipelib.assetdata.assetdatabasemanager.Connection):
+                   manager:AbstractItemManager,
+                   conn:Connection):
         assert isinstance(manager, fiepipefreecad.data.partdesign.PartDesignManager)
         return manager.GetAll(conn)
         
     def GetItemByName(self, name, 
-                     manager:fiepipelib.assetdata.abstractassetdata.abstractdatamanager, 
-                     conn:fiepipelib.assetdata.assetdatabasemanager.Connection):
+                     manager:AbstractItemManager,
+                     conn:Connection):
         assert isinstance(manager, fiepipefreecad.data.partdesign.PartDesignManager)
         return manager.GetByName(name, conn)[0]
         
 
-class PartDesignShell(fiepipelib.assetdata.shell.AssetShell):
+class PartDesignShell(fiepipelib.assetdata.shell.item.ItemShell):
     
     _partDesign = None
     
-    def __init__(self, gitAssetShell:fiepipelib.shells.gitasset.Shell, partDesign:fiepipefreecad.data.partdesign.PartDesign):
+    def __init__(self, gitAssetShell: fiepipelib.gitstorage.shells.gitasset.Shell, partDesign:fiepipefreecad.data.partdesign.PartDesign):
         self._partDesign = partDesign
         super().__init__(gitAssetShell)
         self.AddSubmenu(PartDesignVersionsCommand( gitAssetShell, self),
@@ -187,7 +189,7 @@ class PartDesignVersionsCommand(AbstractFreeCADFileVersionsCommand):
         
     _partDesignShell = None
     
-    def __init__(self, gitAssetShell:fiepipelib.shells.gitasset.Shell, partDesignShell:PartDesignShell):
+    def __init__(self, gitAssetShell: fiepipelib.gitstorage.shells.gitasset.Shell, partDesignShell:PartDesignShell):
         self._partDesignShell = partDesignShell
         self._templates = {}
         super().__init__(gitAssetShell)
@@ -200,7 +202,7 @@ class PartDesignVersionsCommand(AbstractFreeCADFileVersionsCommand):
      
     def GetShell(self, item):
         assert isinstance(item, fiepipefreecad.data.partdesign.PartDesignVersion)
-        return PartDesignVersionShell(self.GetAssetShell(), self._partDesignShell, item)
+        return PartDesignVersionShell(self._partDesignShell, item)
     
     def GetMultiManager(self):
         return fiepipefreecad.data.partdesign.PartDesignDB(
@@ -211,13 +213,8 @@ class PartDesignVersionsCommand(AbstractFreeCADFileVersionsCommand):
         return db.GetPartDesignVersionManager()
     
     def DeleteItem(self, name:str, 
-                  man:fiepipelib.assetdata.abstractassetdata.abstractdatamanager, 
-                  conn:fiepipelib.assetdata.assetdatabasemanager.Connection):
-        assert isinstance(man, fiepipefreecad.data.partdesign.PartDesignVersionManager)
-        i = self.GetItemByName(name, man,conn)
-        p = pathlib.Path(i.GetAbsolutePath())
-        if p.exists():
-            p.unlink()
+                  man:fiepipefreecad.data.partdesign.PartDesignVersionManager, 
+                  conn:Connection):
         man.DeleteByPartAndVersion(self._partDesignShell._partDesign.GetName(), name, conn)
         
         
@@ -259,42 +256,151 @@ class PartDesignVersionsCommand(AbstractFreeCADFileVersionsCommand):
         conn.Commit()
         conn.Close()
     
-    def ItemToName(self, item):
-        assert isinstance(item, fiepipefreecad.data.partdesign.PartDesignVersion)
-        return item.GetVersion()
-    
     def GetAllItems(self, 
-                   manager:fiepipelib.assetdata.abstractassetdata.abstractdatamanager, 
-                   conn:fiepipelib.assetdata.assetdatabasemanager.Connection):
+                   manager:AbstractItemManager,
+                   conn:Connection):
         assert isinstance(manager, fiepipefreecad.data.partdesign.PartDesignVersionManager)
         return manager.GetByPart(self._partDesignShell._partDesign.GetName(), conn)
         
     def GetItemByName(self, name, 
-                     manager:fiepipelib.assetdata.abstractassetdata.abstractdatamanager, 
-                     conn:fiepipelib.assetdata.assetdatabasemanager.Connection) -> fiepipefreecad.data.partdesign.PartDesignVersion:
+                     manager:AbstractItemManager,
+                     conn:Connection) -> fiepipefreecad.data.partdesign.PartDesignVersion:
         assert isinstance(manager, fiepipefreecad.data.partdesign.PartDesignVersionManager)
         return manager.GetByPartAndVersion(self._partDesignShell._partDesign.GetName(),
                                           name, conn)[0]
     
-            
+    def complete_dump_representation_obj_dir(self, text,line,begidx,endidx):
+        return self.index_based_complete(text, line, begidx, endidx,
+                                         {1:self.type_complete,2:self.freecad_complete})
+    
+    def do_dump_representation_obj_dir(self, args):
+        """Dumps a representation of this version as a directory of named obj files
+        to a represenation named 'obj_dir'
+        
+        Usage dump_representation_obj_dir [version] [freecad]
+        
+        arg version: The name of the version to dump.
+        
+        arg freecad: the name of the freecad to use.
+        
+        Will empty the directory of obj files and refill it, if it already exists.
+        
+        Will create and/or update the representation data.
+        """
+        args = self.ParseArguments(args)
+        if len(args) == 0:
+            self.perror("No version specified.")
+            return
+        
+        if len(args) == 1:
+            self.perror("No FreeCAD specified.")
+            return
+        
+        conn = self.GetConnection()
+        db = self.GetMultiManager()
+        db.AttachToConnection(conn)
+        man = self.GetManager(db)
+        
+        v = self.GetItemByName(args[0], man, conn)
+        
+        repman = db.GetPartRepresentationManager()
+        
+        r = fiepipefreecad.data.partdesign.RepresentationFromParameters(
+            "obj_dir", 
+            "obj_dir", 
+            v.GetPartDesignName(), 
+            v.GetVersion())
+        
+        absPath = r.GetAbsolutePath(v)
+        
+        if os.path.exists(absPath):
+            for efname in os.listdir(absPath):
+                p = pathlib.Path(os.path.join(absPath,efname))
+                if p.suffix.lower() == ".obj":
+                    p.unlink()
+                
+        fcadman = fiepipefreecad.freecad.FreeCADLocalManager(self._gitAssetShell._localUser)
+        fcads = fcadman.get_by_name(args[1])
+        
+        if len(fcads) == 0:
+            self.perror("No such FreeCAD.")
+            return
+        
+        fcad = fcads[0]
+        
+        scriptPath = fiepipefreecad.scripts.util.GetScriptPath("partstoobj.py")
+        
+        assert isinstance(fcad, fiepipefreecad.freecad.FreeCAD)
+        fcad.ExecuteInConsoleMode(filepaths=[v.GetAbsolutePath(),scriptPath])
+        #fcad.LaunchInteractive(filepaths=[v.GetAbsolutePath(),scriptPath])
+        
+        repman.Set([r], conn)
+        conn.Commit()
+        conn.Close()
+        
         
 
-class PartDesignVersionShell(fiepipelib.assetdata.shell.AssetShell):
+class PartDesignVersionShell(fiepipelib.fileversion.shell.assetdata.AbstractSingleFileVersionShell):
     
     _partDesignShell = None
-    _version = None
 
-    def __init__(self, gitAssetShell:fiepipelib.shells.gitasset.Shell, partDesignShell:PartDesignShell, version:fiepipefreecad.data.partdesign.PartDesignVersion):
-        self._version = version
+    def __init__(self, partDesignShell:PartDesignShell, version:fiepipefreecad.data.partdesign.PartDesignVersion):
         self._partDesignShell = partDesignShell
-        super().__init__(gitAssetShell)
+        super().__init__(partDesignShell.GetAssetShell(), version)
+        self.AddSubmenu(RepresentationsCommand( partDesignShell.GetAssetShell(), self),
+                        "representations", [])
         
-    def getPluginNameV1(self):
-        return "freecad_part_design_version_shell"
+    def getPluginNamesV1(self):
+        ret = super().getPluginNamesV1()
+        ret.append("freecad_part_design_version_shell")
+        return ret
         
     def GetBreadCrumbsText(self):
-        return self.breadcrumbs_separator.join([self._gitAssetShell.GetBreadCrumbsText(),"fc_pd",self._version.GetFullName()])
+        return self.breadcrumbs_separator.join([self.GetAssetShell().get_prompt_text(), "fc_pd", self._version.GetFullName()])
 
+class RepresentationsCommand(fiepipelib.filerepresentation.shell.item.AbstractSingleFileRepresentationsCommand):
     
+    def getPluginNamesV1(self):
+        ret = super().getPluginNamesV1()
+        ret.append("freecad_part_design_representations_command")
+        return ret
+
+    def GetShell(self, item):
+        assert isinstance(item, fiepipefreecad.data.partdesign.Representation)
+        return RepresentationShell(self.GetAssetShell(), item)
+    
+    def GetMultiManager(self):
+        return fiepipefreecad.data.partdesign.PartDesignDB(
+            self.GetGitWorkingAsset())
+    
+    def GetManager(self, db):
+        assert isinstance(db, fiepipefreecad.data.partdesign.PartDesignDB)
+        return db.GetPartRepresentationManager()
+    
+    def DeleteItem(self, name:str, 
+                  man:AbstractItemManager,
+                  conn:Connection):
+        assert isinstance(man, fiepipefreecad.data.partdesign.RepresentationManager)
+        i = self.GetItemByName(name, man,conn)
+        i.DeleteFiles(self._versionShell._version)
+        man.DeleteByName(self._versionShell._version.GetPartDesignName(),self._versionShell._version.GetVersion(),name, conn)
+    
+    
+    def GetAllItems(self, 
+                   manager:AbstractItemManager,
+                   conn:Connection):
+        assert isinstance(manager, fiepipefreecad.data.partdesign.RepresentationManager)
+        return manager.GetByPartAndVersion(self._versionShell._version.GetPartDesignName(),
+                                    self._versionShell._version.GetVersion(), conn)
         
         
+class RepresentationShell(fiepipelib.filerepresentation.shell.item.AbstractRepresentationShell):
+    
+    def __init__(self, partDesignVersionShell:PartDesignVersionShell, representation:fiepipefreecad.data.partdesign.Representation):
+        super().__init__(partDesignVersionShell,representation)
+        
+    def getPluginNameV1(self):
+        return "freecad_part_design_representation_shell"
+        
+    def GetBreadCrumbsText(self):
+        return self.breadcrumbs_separator.join([self._partDesignVersionShell.get_prompt_text(), self._representation._name])
