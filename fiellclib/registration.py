@@ -5,7 +5,7 @@ import fiepipelib.storage.localvolume
 import os.path
 import json
 
-def IsRegistered():
+def is_registered():
     plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
     user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
     registry = fiepipelib.legalentity.registry.data.registered_entity.localregistry(user)
@@ -13,19 +13,20 @@ def IsRegistered():
     return len(entities) > 0
 
 
-def Register():
+def register():
     moduleDir = os.path.dirname(__file__)
     regPath = os.path.join(moduleDir, "registration.fiepipe.fie.us.json")
-    regFile = open(regPath)
+    regFile = open(regPath,'r')
     data = json.load(regFile)
     regFile.close()
+
     registration = fiepipelib.legalentity.registry.data.registered_entity.FromJSONData(data)
     plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
     user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
     registry = fiepipelib.legalentity.registry.data.registered_entity.localregistry(user)
     registry.Set([registration])
 
-def SetupStandardVolumes():
+def setup_standard_volumes():
     plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
     user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
     registry = fiepipelib.storage.localvolume.localvolumeregistry(user)

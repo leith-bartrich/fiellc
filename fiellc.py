@@ -10,11 +10,11 @@ import typing
 #fiellc
 import fiellclib.registration
 #freecad
-import fiepipefreecad.commands.system
+import fiepipefreecad.commands.manager
 import fiepipefreecad.commands.asset
 import fiepipefreecad.templates.util
 #3dcoat
-import fiepipe3dcoat.shell.system
+import fiepipe3dcoat.shell.manager
 import fiepipe3dcoat.shell.representations
 import fiepipe3dcoat.shell.workfile
 import fiepipe3dcoat.templates.util
@@ -44,9 +44,9 @@ from fiepipelib.filerepresentation.shell.item import AbstractSingleFileRepresent
 #plugins for fiepipe shell
 def FIEPipeShellPlugin(shell:fiepipelib.shells.fiepipe.Shell):
     #freecad command
-    shell.add_submenu(fiepipefreecad.commands.system.FreeCADSystemCommand(shell._localUser), "freecad", [])
+    shell.add_submenu(fiepipefreecad.commands.manager.FreeCADSystemCommand(), "freecad", [])
     #3dcoat command
-    shell.AddSubmenu(fiepipe3dcoat.shell.system.CoatSystemCommand(shell._localUser), "3dcoat", [])
+    shell.add_submenu(fiepipe3dcoat.shell.manager.CoatSystemCommand(), "3dcoat", [])
     
 #plugins for asset shell
 def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
@@ -100,9 +100,9 @@ def main():
     #note: in this mode, we're distributing the registration by pip becaues the registration is embedded in the python package.
     #that means we can update the registration with new authority, etc. by releasing a new version of the package and requiring
     #that users keep up to date via pip/pypi/github/git.
-    if not fiellclib.registration.IsRegistered():
+    if not fiellclib.registration.is_registered():
         print("Registering FIE LLC")
-        fiellclib.registration.Register()
+        fiellclib.registration.register()
 
     #make sure entity standard volumes are set
     #note: Since the storage volumes are global to the system, this step is potentially contentious.
@@ -112,7 +112,7 @@ def main():
     
     #In truth though, the implementaiton only sets up a "docs" volume in an extremely common way.  So we're
     #not stepping on toes with this one.
-    fiellclib.registration.SetupStandardVolumes()
+    fiellclib.registration.setup_standard_volumes()
 
     #start the shell.
     #note:  We're just jumping straight into the local site here.  But we don't have to.

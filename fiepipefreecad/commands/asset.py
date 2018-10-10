@@ -6,7 +6,7 @@ import fiepipefreecad.data.partdesign
 import pathlib
 import os
 import os.path
-import fiepipefreecad.commands.system
+import fiepipefreecad.commands.manager
 import fiepipelib.assetdata.shell
 import fiepipefreecad.scripts.util
 from fiepipelib.assetdata.data.items import AbstractItemsRelation,AbstractItemManager
