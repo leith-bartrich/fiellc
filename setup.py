@@ -28,6 +28,7 @@ setup(
         'fiepipe.plugin.gitstorage.lfs.patterns': [
             'coat3d = fiepipe3dcoat.routines.lfs_tracked_patterns:get_patterns',
             'freecad = fiepipefreecad.routines.lfs_tracked_patterns:get_patterns',
+            'fiellc = fiellclib.routines.lfs_tracked_patterns:get_patterns',
         ],
 
     },
