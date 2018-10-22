@@ -5,17 +5,17 @@ import fiepipelib.storage.localvolume
 import os.path
 import json
 
-def is_registered():
+def is_registered(fqdn="fie.us"):
     plat = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
     user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(plat)
     registry = fiepipelib.legalentity.registry.data.registered_entity.localregistry(user)
-    entities = registry.GetByFQDN("fie.us")
+    entities = registry.GetByFQDN(fqdn)
     return len(entities) > 0
 
 
-def register():
+def register(fqdn="fie.us"):
     moduleDir = os.path.dirname(__file__)
-    regPath = os.path.join(moduleDir, "registration.fiepipe.fie.us.json")
+    regPath = os.path.join(moduleDir, "registration.fiepipe." + fqdn + ".json")
     regFile = open(regPath,'r')
     data = json.load(regFile)
     regFile.close()

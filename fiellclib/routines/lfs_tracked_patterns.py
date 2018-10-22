@@ -5,7 +5,7 @@ from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
 
 def get_patterns(routines: GitAssetRoutines, patterns: typing.List[str]):
 
-    if routines.container.GetFQDN() == "fie.us":
+    if routines.container.GetFQDN().endswith("fie.us"):
 
         #ithoughts
         patterns.append("*.itmz")

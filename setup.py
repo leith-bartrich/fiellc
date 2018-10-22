@@ -17,7 +17,7 @@ setup(
     install_requires=["fiepipe"],
     entry_points={
         'fiepipe.plugin.shell.fiepipe.v1' : 'fiellc = fiellc:FIEPipeShellPlugin',
-        #'fiepipe.plugin.shell.gitasset.v1' : 'fiellc = fiellc:GitAssetShellPlugin',
+        'fiepipe.plugin.shell.gitasset.v1' : 'fiellc = fiellc:GitAssetShellPlugin',
         #'fiepipe.plugin.shell.all_single_file_representations_command.v1' : 'fiellc = fiellc:AllSingleFileRepresentationsCommand',
         #'fiepipe.plugin.shell.freecad_part_design_versions_command.v1' : 'fiellc = fiellc:FreeCADPartDesignVerionsCommand',
         #'fiepipe.plugin.shell.coat_workfile_versions_command.v1' : 'fiellc = fiellc:CoatWorkfileVersionsCommand',
