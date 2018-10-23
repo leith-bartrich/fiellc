@@ -1,20 +1,23 @@
 #!/usr/local/bin/python
 # general and fiepipe
-import typing
 import sys
+import typing
+
 import pkg_resources
 
 # fiellc
 import fiellclib.registration
 # 3dcoat
 import fiepipe3dcoat.shell.manager
-#import fiepipe3dcoat.shell.representations
-#import fiepipe3dcoat.shell.workfile
+# import fiepipe3dcoat.shell.representations
+# import fiepipe3dcoat.shell.workfile
 import fiepipe3dcoat.templates.util
-#import fiepipefreecad.commands.asset
+# import fiepipefreecad.commands.asset
 # freecad
 import fiepipefreecad.commands.manager
 import fiepipefreecad.templates.util
+import fiepipehoudini.shell.assetaspect
+import fiepipehoudini.shell.installs
 import fiepipelib.gitstorage.shells.gitasset
 import fiepipelib.legalentity.registry.shell.legal_entity
 import fiepipelib.localplatform.routines.localplatform
@@ -23,7 +26,6 @@ import fiepipelib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
-from fiepipelib.filerepresentation.shell.item import AbstractSingleFileRepresentationsCommand
 
 
 # The plugins we use are set up here.
@@ -54,6 +56,8 @@ def FIEPipeShellPlugin(shell: fiepipelib.shells.fiepipe.Shell):
     shell.add_submenu(fiepipe3dcoat.shell.manager.CoatSystemCommand(), "3dcoat", [])
     # unreal4 command
     shell.add_submenu(fiepipeunreal4.shell.installs.Unreal4InstallsCommand(), "unreal4", [])
+    # houdini command
+    shell.add_submenu(fiepipehoudini.shell.installs.HoudiniInstallsCommand(), "houdini", [])
 
 
 # plugins for asset shell
@@ -63,11 +67,12 @@ def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
     fqdn = routines.container.GetFQDN()
     if fqdn.endswith("fie.us"):
         # freecad pard designs command
-        #shell.AddSubmenu(fiepipefreecad.commands.asset.PartDesignsCommand(shell), 'freecad_partdesigns', ['fc_pd'])
+        # shell.AddSubmenu(fiepipefreecad.commands.asset.PartDesignsCommand(shell), 'freecad_partdesigns', ['fc_pd'])
         # 3DCoat work files command
-        #shell.AddSubmenu(fiepipe3dcoat.shell.workfile.WorkFilesCommand(shell), "3dcoat_workfiles", ['coat_wf'])
+        # shell.AddSubmenu(fiepipe3dcoat.shell.workfile.WorkFilesCommand(shell), "3dcoat_workfiles", ['coat_wf'])
         # unreal aspect command
         shell.add_submenu(fiepipeunreal4.shell.assetaspect.Unreal4AssetAspectCommand(shell), "unreal4", [])
+        shell.add_submenu(fiepipehoudini.shell.assetaspect.HoudiniAssetAspectCommand(shell), "houdini", [])
 
 
 # plugins for all representations commands
@@ -107,7 +112,6 @@ def FileTemplates(templateType: str, fqdn: str, templates: typing.Dict[str, str]
 
 # commmand main loop
 def main():
-
     if "--testing" in sys.argv:
         testing = True
     else:

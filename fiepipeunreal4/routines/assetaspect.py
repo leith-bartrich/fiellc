@@ -10,7 +10,7 @@ from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
 from fiepipeunreal4.routines.git import add_project_tracking_metadata, remove_project_tracking_metadata
 
 
-class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines):
+class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
     _asset_path: str = None
 
     def __init__(self, asset_path: str):

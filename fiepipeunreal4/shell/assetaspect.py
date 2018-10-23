@@ -54,6 +54,7 @@ class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
         routines = self.get_configuration_routines()
         routines.load()
         routines.add_uproject(args[0])
+        routines.commit()
 
     def configured_projects_complete(self, text, line, begidx, endidx):
         ret = []
@@ -83,6 +84,17 @@ class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
         routines = self.get_configuration_routines()
         routines.load()
         routines.remove_uproject_file(args[0])
+
+    def do_list_projects(self, args):
+        """Prints a list of unreal projects from the configuration for this asset.
+
+        Usage: list_projects
+        """
+        routines = self.get_configuration_routines()
+        routines.load()
+        project_files = routines.get_uproject_files()
+        for project_file in project_files:
+            self.poutput(project_file)
 
 
 
