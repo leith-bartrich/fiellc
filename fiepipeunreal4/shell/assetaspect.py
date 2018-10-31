@@ -1,9 +1,12 @@
 import typing
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
-from fiepipelib.assetaspect.shell.config import ConfigCommand, T
+from fiepipelib.assetaspect.shell.config import ConfigCommand
+from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
+from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
+from fiepipeunreal4.data.installs import Unreal4InstallsManager
 from fiepipeunreal4.routines.assetaspect import UnrealAspectConfigurationRoutines
+
 
 class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
 
@@ -96,5 +99,43 @@ class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
         for project_file in project_files:
             self.poutput(project_file)
 
+    def unreal_install_complete(self, text, line, begidx, endidx):
+        ret = []
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = Unreal4InstallsManager(user)
+        for install in man.GetAll():
+            if install.get_name().startswith(text):
+                ret.append(install.get_name())
+        return ret
 
+    def complete_open_project(self, text, line, begidx, endidx):
+        return self.index_based_complete(text, line, begidx, endidx,
+                                         {1: self.uproject_files_disk_complete, 2: self.unreal_install_complete})
 
+    def do_open_project(self, args):
+        """Opens the given project in unreal editor with the given Unreal4 install.
+
+        Usage: open_project [uproject_path] [unreal_install]
+
+        arg uproject_path: The asset relative path to a uproject file to open.
+        arg unreal_install: The name of the unreal install to use to open the uproject.
+        """
+
+        args = self.parse_arguments(args)
+        if len(args) < 1:
+            self.perror("No uproject_path given.")
+            return
+        if len(args) < 2:
+            self.perror("No unreal_install given.")
+            return
+
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = Unreal4InstallsManager(user)
+
+        unreal_install = man.get_by_name(args[1])
+
+        routines = self.get_configuration_routines()
+        routines.load()
+        routines.open_in_ueditor(args[0],unreal_install)

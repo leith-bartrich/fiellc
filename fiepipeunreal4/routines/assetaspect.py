@@ -7,8 +7,10 @@ import git
 
 from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
+from fiepipeunreal4.data.installs import Unreal4Install, Unreal4InstallsManager
 from fiepipeunreal4.routines.git import add_project_tracking_metadata, remove_project_tracking_metadata
-
+from fiepipelib.applauncher.genericlauncher import listlauncher
+from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines
 
 class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
     _asset_path: str = None
@@ -62,3 +64,20 @@ class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetA
         if uproject_file_path in project_files:
             project_files.remove(uproject_file_path)
         self._remove_from_git_tracking(uproject_file_path)
+
+    def open_in_ueditor(self, uproject_file_path: str, unreal_install: Unreal4Install):
+        """Opens the given uproject in ueditor"""
+        args = []
+        unreal_engine_path = unreal_install.get_path()
+        plat = get_local_platform_routines()
+        if isinstance(plat, LocalPlatformWindowsRoutines):
+            exepath = os.path.join(unreal_engine_path,"Engine", "Binaries", "Win64","UE4Editor.exe")
+        else:
+            raise NotImplementedError("Not currently implremented for non-windows platforms.")
+        args.append(exepath)
+
+        uproject_abs_path = os.path.join(self._asset_path,uproject_file_path)
+        args.append(uproject_abs_path)
+
+        launcher = listlauncher(args)
+        launcher.launch()
