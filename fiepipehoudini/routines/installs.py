@@ -44,9 +44,9 @@ class HoudiniInstallsRoutines(AbstractLocalManagedRoutines[HoudiniInstall]):
         try:
             item = man.get_by_name(name)
         except LookupError:
-            item = man.FromParameters(name, ".","bin/houdini.exe")
+            item = man.FromParameters(name, ".","bin\\houdini.exe")
         path = await self._path_input_ui.execute("Path to Unreal4 Install Dir", item.get_path())
-        executable = await self._executable_input_ui.execute("Executable sub-path", '/bin/houdini.exe')
+        executable = await self._executable_input_ui.execute("Executable sub-path", item.get_executable())
         item._path = path
         item._executable = executable
         man.Set([item])

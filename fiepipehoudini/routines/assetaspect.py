@@ -5,9 +5,11 @@ import typing
 
 import git
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
+from fiepipehoudini.data.installs import HoudiniInstall
 from fiepipehoudini.routines.git import add_project_tracking_metadata, remove_project_tracking_metadata
+from fiepipelib.applauncher.genericlauncher import listlauncher
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 
 
 class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAssetAspectConfiguration]):
@@ -52,3 +54,11 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
         if houdini_project_dir in project_dirs:
             project_dirs.remove(houdini_project_dir)
         self._remove_from_git_tracking(houdini_project_dir)
+
+    def open_houdini(self, houdini_install: HoudiniInstall, args: typing.List[str]):
+        launch_args = []
+        exec_path = os.path.join(houdini_install.get_path(), houdini_install.get_executable())
+        launch_args.append(exec_path)
+        launch_args.extend(args)
+        launcher = listlauncher(launch_args)
+        launcher.launch()

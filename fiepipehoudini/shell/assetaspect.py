@@ -1,10 +1,14 @@
 import typing
+
 import cmd2
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
-from fiepipelib.assetaspect.shell.config import ConfigCommand, T
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
+from fiepipehoudini.data.installs import HoudiniInstallsManager
 from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
+from fiepipelib.assetaspect.shell.config import ConfigCommand
+from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
+from fiepipelib.localuser.routines.localuser import LocalUserRoutines
+
 
 class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
 
@@ -87,4 +91,36 @@ class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
         for project_dir in all_projects:
             self.poutput(project_dir)
 
+    def houdini_install_complete(self, text, line, begidx, endidx):
+        ret = []
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = HoudiniInstallsManager(user)
+        for houdini in man.GetAll():
+            if houdini.get_name().startswith(text):
+                ret.append(houdini.get_name())
+        return ret
 
+    complete_open = houdini_install_complete
+
+    def do_open(self, args):
+        """Opens the given houdini version.
+
+        Usage: open [houdini_install]
+
+        houdini_install:  The name of the houdini install to open.
+        """
+        args = self.parse_arguments(args)
+        if len(args) < 1:
+            self.perror("No houdini_install specified.")
+            return
+
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = HoudiniInstallsManager(user)
+        houdini = man.get_by_name(args[0])
+
+        routines = self.get_configuration_routines()
+        routines.load()
+
+        routines.open_houdini(houdini, [])
