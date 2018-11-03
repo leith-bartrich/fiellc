@@ -16,3 +16,5 @@ Current Internal Plugins:
 FreeCAD - Pipeline integration for FreeCAD - https://www.freecadweb.org/
 3DCoat - Pipeline integration for 3DCoat - https://3dcoat.com/home/
 FBXLib - Pipeline plugin for a generic library of FBX files. - https://en.wikipedia.org/wiki/FBX
+Houdini - https://www.sidefx.com/
+Unreal4 - https://www.unrealengine.com/
