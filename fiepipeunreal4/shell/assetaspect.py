@@ -1,5 +1,6 @@
 import typing
 
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 from fiepipelib.assetaspect.shell.config import ConfigCommand
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
@@ -138,4 +139,6 @@ class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
 
         routines = self.get_configuration_routines()
         routines.load()
-        routines.open_in_ueditor(args[0],unreal_install)
+        routines.open_in_ueditor(args[0], unreal_install)
+
+

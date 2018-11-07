@@ -5,6 +5,7 @@ import cmd2
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
 from fiepipehoudini.data.installs import HoudiniInstallsManager
 from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 from fiepipelib.assetaspect.shell.config import ConfigCommand
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
@@ -124,3 +125,5 @@ class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
         routines.load()
 
         routines.open_houdini(houdini, [])
+
+

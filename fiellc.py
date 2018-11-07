@@ -26,7 +26,7 @@ import fiepipelib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
-
+import functools
 
 # The plugins we use are set up here.
 # And the main loop of the entity's custom command is defined here.
@@ -62,17 +62,13 @@ def FIEPipeShellPlugin(shell: fiepipelib.shells.fiepipe.Shell):
 
 # plugins for asset shell
 def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
-    routines = shell.get_routines()
-    routines.load()
-    fqdn = routines.container.GetFQDN()
-    if fqdn.endswith("fie.us"):
-        # freecad pard designs command
-        # shell.AddSubmenu(fiepipefreecad.commands.asset.PartDesignsCommand(shell), 'freecad_partdesigns', ['fc_pd'])
-        # 3DCoat work files command
-        # shell.AddSubmenu(fiepipe3dcoat.shell.workfile.WorkFilesCommand(shell), "3dcoat_workfiles", ['coat_wf'])
-        # unreal aspect command
-        shell.add_submenu(fiepipeunreal4.shell.assetaspect.Unreal4AssetAspectCommand(shell), "unreal4", [])
-        shell.add_submenu(fiepipehoudini.shell.assetaspect.HoudiniAssetAspectCommand(shell), "houdini", [])
+    # freecad pard designs command
+    # shell.AddSubmenu(fiepipefreecad.commands.asset.PartDesignsCommand(shell), 'freecad_partdesigns', ['fc_pd'])
+    # 3DCoat work files command
+    # shell.AddSubmenu(fiepipe3dcoat.shell.workfile.WorkFilesCommand(shell), "3dcoat_workfiles", ['coat_wf'])
+    # unreal aspect command
+    shell.add_submenu(fiepipeunreal4.shell.assetaspect.Unreal4AssetAspectCommand(shell), "unreal4", [])
+    shell.add_submenu(fiepipehoudini.shell.assetaspect.HoudiniAssetAspectCommand(shell), "houdini", [])
 
 
 # plugins for all representations commands
