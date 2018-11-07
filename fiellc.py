@@ -26,7 +26,9 @@ import fiepipelib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
-import functools
+
+from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
+
 
 # The plugins we use are set up here.
 # And the main loop of the entity's custom command is defined here.
@@ -69,6 +71,7 @@ def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
     # unreal aspect command
     shell.add_submenu(fiepipeunreal4.shell.assetaspect.Unreal4AssetAspectCommand(shell), "unreal4", [])
     shell.add_submenu(fiepipehoudini.shell.assetaspect.HoudiniAssetAspectCommand(shell), "houdini", [])
+    shell.add_submenu(LooseFilesAspectConfigCommand(shell), "loose_files", [])
 
 
 # plugins for all representations commands

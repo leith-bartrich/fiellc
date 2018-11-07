@@ -1,35 +1,86 @@
 import typing
 
-from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
+from fiepipeloosefiles.routines.assetaspect import LooseFilesAspectConfigurationRoutines
 
+def get_patterns(routines: LooseFilesAspectConfigurationRoutines, patterns: typing.List[str]):
 
-def get_patterns(routines: GitAssetRoutines, patterns: typing.List[str]):
+        # common image formats
+        patterns.append(".jpg")
+        patterns.append(".gif")
+        patterns.append(".bmp")
+        patterns.append(".png")
+        patterns.append(".psd")
+        patterns.append(".tga")
+        patterns.append(".tif")
+        patterns.append(".tiff")
+        patterns.append(".exr")
+        patterns.append(".cin")
+        patterns.append(".dpx")
 
-    if routines.container.GetFQDN().endswith("fie.us"):
+        # common archive formats
+        patterns.append(".zip")
+        patterns.append(".tar")
+        patterns.append(".gz")
+        patterns.append(".7z")
+        patterns.append(".iso")
+        patterns.append(".dmg")
+
+        # common audio formats
+        patterns.append(".mp3")
+        patterns.append(".m4a")
+        patterns.append(".wav")
+        patterns.append(".aif")
+        patterns.append(".aiff")
+        patterns.append(".wma")
+        patterns.append(".ac3")
+
+        # common video formats
+        patterns.append(".mpg")
+        patterns.append(".avi")
+        patterns.append(".flv")
+        patterns.append(".mov")
+        patterns.append(".m4v")
+        patterns.append(".mp4")
+        patterns.append(".wmv")
+        patterns.append(".mxf")
+
+        # common doc/publish formats
+        patterns.append(".pdf")
+        patterns.append(".eps")
+        patterns.append(".ai")
+        # patterns.append(".svg")
+
+        # common MS working files
+        patterns.append(".doc")
+        patterns.append(".xls")
+        patterns.append(".ppt")
+
+        # common 3d mesh files
+        patterns.append(".obj")
+        patterns.append(".fbx")
+
+        # common executable files
+        patterns.append(".exe")
+        patterns.append(".com")
+        patterns.append(".bin")
+        patterns.append(".app")
+        patterns.append(".apk")
+        patterns.append(".jar")
+        patterns.append(".dll")
+        patterns.append(".so")
+        patterns.append(".lib")
+        patterns.append(".cab")
+        patterns.append(".sys")
 
         #ithoughts
-        patterns.append("*.itmz")
+        patterns.append(".itmz")
 
         #krita
-        patterns.append("*.kra")
+        patterns.append(".kra")
 
         #sketchbook
-        patterns.append("*.skba")
+        patterns.append(".skba")
 
-        #houdini
-        patterns.append("*.hip")
-        patterns.append("*.hiplc")
-        patterns.append("*.hipnc")
-        patterns.append("*.bgeo")
-        patterns.append("*.geo")
-        patterns.append("*.poly")
-        patterns.append("*.bpoly")
-        patterns.append("*.d")
-        patterns.append("*.rib")
-        patterns.append("*.pc")
-        patterns.append("*.pic")
-        patterns.append("*.pic.Z")
-        patterns.append("*.rat")
 
 
 
