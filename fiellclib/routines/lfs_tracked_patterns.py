@@ -72,6 +72,11 @@ def get_patterns(routines: LooseFilesAspectConfigurationRoutines, patterns: typi
         patterns.append(".cab")
         patterns.append(".sys")
 
+        # common font files
+        patterns.append(".ttf")
+        patterns.append(".otf")
+        patterns.append(".fnt")
+
         #ithoughts
         patterns.append(".itmz")
 
