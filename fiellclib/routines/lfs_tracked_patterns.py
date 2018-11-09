@@ -33,6 +33,7 @@ def get_patterns(routines: LooseFilesAspectConfigurationRoutines, patterns: typi
         patterns.append(".aiff")
         patterns.append(".wma")
         patterns.append(".ac3")
+        patterns.append(".ogg")
 
         # common video formats
         patterns.append(".mpg")

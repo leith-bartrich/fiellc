@@ -1,12 +1,12 @@
 from fiepipelib.assetaspect.routines.simpleapplication import AbstractSimpleApplicationRoutines
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
-from fiepipeunreal4.data.installs import Unreal4Install, Unreal4InstallsManager
+from fiepiperpgmakermv.data.installs import RPGMakerMVInstall, RPGMakerMVInstallManager
 
 
-class Unreal4InstallsRoutines(AbstractSimpleApplicationRoutines[Unreal4Install]):
+class RPGMakerMVInstallsRoutines(AbstractSimpleApplicationRoutines[RPGMakerMVInstall]):
 
-    def GetManager(self) -> Unreal4InstallsManager:
+    def GetManager(self) -> RPGMakerMVInstallManager:
         plat = get_local_platform_routines()
         user = LocalUserRoutines(plat)
-        return Unreal4InstallsManager(user)
+        return RPGMakerMVInstallManager(user)

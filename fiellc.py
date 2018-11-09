@@ -28,7 +28,7 @@ import fiepipeunreal4.shell.assetaspect
 import fiepipeunreal4.shell.installs
 
 from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
-
+from fiepiperpgmakermv.shell.installs import RPGMakerMVInstallsCommand
 
 # The plugins we use are set up here.
 # And the main loop of the entity's custom command is defined here.
@@ -60,6 +60,8 @@ def FIEPipeShellPlugin(shell: fiepipelib.shells.fiepipe.Shell):
     shell.add_submenu(fiepipeunreal4.shell.installs.Unreal4InstallsCommand(), "unreal4", [])
     # houdini command
     shell.add_submenu(fiepipehoudini.shell.installs.HoudiniInstallsCommand(), "houdini", [])
+    # rpgmakermv command
+    shell.add_submenu(RPGMakerMVInstallsCommand(),"rpg_maker_mv",[])
 
 
 # plugins for asset shell
