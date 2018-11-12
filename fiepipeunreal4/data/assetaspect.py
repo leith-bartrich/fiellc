@@ -1,7 +1,7 @@
 import typing
 
 from fiepipelib.assetaspect.data.config import AspectConfiguration
-
+from fiepipeunreal4.data.git import get_asset_ignore_patterns,get_asset_lfs_track_patterns,get_project_ignore_patterns,get_project_lfs_track_patterns
 
 class UnrealAssetAspectConfiguration(AspectConfiguration):
     _project_files: typing.List[str] = None
@@ -26,3 +26,27 @@ class UnrealAssetAspectConfiguration(AspectConfiguration):
 
     def get_project_files(self) -> typing.List[str]:
         return self._project_files
+
+    def get_lfs_patterns(self) -> typing.List[str]:
+
+        ret = []
+
+        ret.extend(get_asset_lfs_track_patterns())
+
+        for uproject_file in self.get_project_files():
+            ret.extend(get_project_lfs_track_patterns(uproject_file))
+
+        return ret
+
+    def get_git_ignores(self) -> typing.List[str]:
+
+        ret = []
+
+        ret.extend( get_asset_ignore_patterns())
+
+        for uproject_file in self.get_project_files():
+            ret.extend(get_project_ignore_patterns(uproject_file) )
+
+        return ret
+
+

@@ -3,11 +3,8 @@ import os.path
 import pathlib
 import typing
 
-import git
-
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
 from fiepipehoudini.data.installs import HoudiniInstall
-from fiepipehoudini.routines.git import add_project_tracking_metadata, remove_project_tracking_metadata
 from fiepipelib.applauncher.genericlauncher import listlauncher
 from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 
@@ -25,14 +22,6 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
     async def reconfigure(self):
         pass
 
-    def _add_to_git_tracking(self, houdini_project_path: str):
-        repo = git.Repo(self._asset_path)
-        add_project_tracking_metadata(repo, houdini_project_path)
-
-    def _remove_from_git_tracking(self, houdini_project_path: str):
-        repo = git.Repo(self._asset_path)
-        remove_project_tracking_metadata(repo, houdini_project_path)
-
     def add_project(self, houdini_project_path: str):
         """Adds a project directory to the configuration and sets up git tracking"""
         path = pathlib.Path(houdini_project_path)
@@ -41,7 +30,6 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
         project_files = self.get_configuration().get_project_dirs()
         if not houdini_project_path in project_files:
             project_files.append(houdini_project_path)
-        self._add_to_git_tracking(houdini_project_path)
 
     def get_project_dirs(self) -> typing.List[str]:
         """Gets a list of project directories from the configuration."""
@@ -53,7 +41,6 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
         project_dirs = self.get_configuration().get_project_dirs()
         if houdini_project_dir in project_dirs:
             project_dirs.remove(houdini_project_dir)
-        self._remove_from_git_tracking(houdini_project_dir)
 
     def open_houdini(self, houdini_install: HoudiniInstall, args: typing.List[str]):
         launch_args = []

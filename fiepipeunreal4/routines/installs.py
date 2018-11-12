@@ -1,10 +1,10 @@
-from fiepipelib.assetaspect.routines.simpleapplication import AbstractSimpleApplicationRoutines
+from fiepipelib.assetaspect.routines.simpleapplication import AbstractSimpleApplicationInstallRoutines
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipeunreal4.data.installs import Unreal4Install, Unreal4InstallsManager
 
 
-class Unreal4InstallsRoutines(AbstractSimpleApplicationRoutines[Unreal4Install]):
+class Unreal4InstallsRoutines(AbstractSimpleApplicationInstallRoutines[Unreal4Install]):
 
     def GetManager(self) -> Unreal4InstallsManager:
         plat = get_local_platform_routines()

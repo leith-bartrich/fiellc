@@ -26,9 +26,10 @@ import fiepipelib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
-
 from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
+from fiepiperpgmakermv.shell.aspectconfig import RPGMakerMVAspectConfigurationCommand
 from fiepiperpgmakermv.shell.installs import RPGMakerMVInstallsCommand
+
 
 # The plugins we use are set up here.
 # And the main loop of the entity's custom command is defined here.
@@ -61,7 +62,7 @@ def FIEPipeShellPlugin(shell: fiepipelib.shells.fiepipe.Shell):
     # houdini command
     shell.add_submenu(fiepipehoudini.shell.installs.HoudiniInstallsCommand(), "houdini", [])
     # rpgmakermv command
-    shell.add_submenu(RPGMakerMVInstallsCommand(),"rpg_maker_mv",[])
+    shell.add_submenu(RPGMakerMVInstallsCommand(), "rpg_maker_mv", [])
 
 
 # plugins for asset shell
@@ -74,6 +75,7 @@ def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
     shell.add_submenu(fiepipeunreal4.shell.assetaspect.Unreal4AssetAspectCommand(shell), "unreal4", [])
     shell.add_submenu(fiepipehoudini.shell.assetaspect.HoudiniAssetAspectCommand(shell), "houdini", [])
     shell.add_submenu(LooseFilesAspectConfigCommand(shell), "loose_files", [])
+    shell.add_submenu(RPGMakerMVAspectConfigurationCommand(shell), "rpg_maker_mv", [])
 
 
 # plugins for all representations commands
