@@ -36,11 +36,20 @@ class LooseFilesAspectConfiguration(AspectConfiguration):
         entrypoints = pkg_resources.iter_entry_points("fiepipe.plugin.loosefiles.lfs.extensions")
         for entrypoint in entrypoints:
             method = entrypoint.load()
-            method(self, lfs_extensions)
+            method(lfs_extensions)
 
         ret = []
         for extension in lfs_extensions:
             ret.append("*." + extension.lstrip('.'))
+
+        lfs_patterns = []
+
+        entrypoints = pkg_resources.iter_entry_points("fiepipe.plugin.loosefiles.lfs.patterns")
+        for entrypoint in entrypoints:
+            method = entrypoint.load()
+            method(lfs_patterns)
+
+        ret.extend(lfs_patterns)
 
         return ret
 
@@ -56,5 +65,14 @@ class LooseFilesAspectConfiguration(AspectConfiguration):
         ret = []
         for extension in ignore_extensions:
             ret.append("*." + extension.lstrip('.'))
+
+        ignore_patterns = []
+
+        entrypoints = pkg_resources.iter_entry_points("fiepipe.plugin.loosefiles.ignore.extensions")
+        for entrypoint in entrypoints:
+            method = entrypoint.load()
+            method(self, ignore_patterns)
+
+        ret.extend(ignore_patterns)
 
         return ret

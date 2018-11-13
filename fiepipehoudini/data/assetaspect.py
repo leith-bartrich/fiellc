@@ -3,6 +3,7 @@ import typing
 from fiepipehoudini.data.git import get_asset_ignores, get_project_ignores, get_asset_lfs_tracks, \
     get_project_lfs_tracks
 from fiepipelib.assetaspect.data.config import AspectConfiguration
+from fiepipecommonfiletypes.data.lfs_tracked_patterns import get_image_extensions, get_3d_extensions, get_video_extensions,get_audio_extensions, extensions_to_lfs_patterns
 
 
 class HoudiniAssetAspectConfiguration(AspectConfiguration):
@@ -32,10 +33,19 @@ class HoudiniAssetAspectConfiguration(AspectConfiguration):
     def get_lfs_patterns(self) -> typing.List[str]:
 
         ret = []
+
+        get_video_extensions(ret)
+        get_audio_extensions(ret)
+        get_3d_extensions(ret)
+        get_image_extensions(ret)
+
+        ret = extensions_to_lfs_patterns(ret)
+
         ret.extend(get_asset_lfs_tracks())
 
         for project in self.get_project_dirs():
             ret.extend(get_project_lfs_tracks(project))
+
 
         return ret
 

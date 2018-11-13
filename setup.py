@@ -29,9 +29,9 @@ setup(
             'fiellc = fiellc:main',
         ],
         'fiepipe.plugin.loosefiles.lfs.extensions': [
-            'fiellc = fiellclib.routines.lfs_tracked_patterns:get_patterns',
-            'coat3d = fiepipe3dcoat.routines.lfs_tracked_patterns:get_patterns',
-            'freecad = fiepipefreecad.routines.lfs_tracked_patterns:get_patterns',
+            'fiellc = fiepipecommonfiletypes.data.lfs_tracked_patterns:get_common_extensions',
+            'coat3d = fiepipe3dcoat.routines.lfs_tracked_patterns:get_extensions',
+            'freecad = fiepipefreecad.routines.lfs_tracked_patterns:get_extensions',
         ],
 
     },

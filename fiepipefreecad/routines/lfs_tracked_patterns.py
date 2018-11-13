@@ -2,7 +2,7 @@ import typing
 
 from fiepipeloosefiles.routines.assetaspect import LooseFilesAspectConfigurationRoutines
 
-def get_patterns(routines: LooseFilesAspectConfigurationRoutines, patterns: typing.List[str]):
+def get_extensions(patterns: typing.List[str]):
 
         # native
         patterns.append(".fcstd")
