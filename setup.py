@@ -33,6 +33,12 @@ setup(
             'coat3d = fiepipe3dcoat.routines.lfs_tracked_patterns:get_extensions',
             'freecad = fiepipefreecad.routines.lfs_tracked_patterns:get_extensions',
         ],
+        'fiepipe.houdini.houdini_site_paths': [
+            'fiellc = fiellclib.routines.houdini_paths:houdini_site_paths'
+        ],
+        'fiepipe.houdini.houdini_job_paths': [
+            'fiellc = fiellclib.routines.houdini_paths:houdini_job_paths'
+        ],
 
     },
     long_description=read('README.txt'),

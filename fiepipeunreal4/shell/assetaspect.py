@@ -25,10 +25,7 @@ class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
 
     def get_configuration_routines(self) -> UnrealAspectConfigurationRoutines:
         asset_routines = self.get_asset_shell().get_routines()
-        asset_routines.load()
-        working_asset = asset_routines.working_asset
-        path = working_asset.GetSubmodule().abspath
-        return UnrealAspectConfigurationRoutines(path)
+        return UnrealAspectConfigurationRoutines(asset_routines)
 
     def uproject_files_disk_complete(self, text, line, begidx, endidx):
         ret = []

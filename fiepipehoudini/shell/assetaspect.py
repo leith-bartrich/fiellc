@@ -1,11 +1,13 @@
+import os
+import os.path
 import typing
 
 import cmd2
 
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
+from fiepipehoudini.data.filetypes import get_hip_extensions
 from fiepipehoudini.data.installs import HoudiniInstallsManager
 from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 from fiepipelib.assetaspect.shell.config import ConfigCommand
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
@@ -27,10 +29,7 @@ class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
 
     def get_configuration_routines(self) -> HoudiniAspectConfigurationRoutines:
         asset_routines = self.get_asset_shell().get_routines()
-        asset_routines.load()
-        working_asset = asset_routines.working_asset
-        path = working_asset.GetSubmodule().abspath
-        return HoudiniAspectConfigurationRoutines(path)
+        return HoudiniAspectConfigurationRoutines(asset_routines)
 
     complete_add_project = cmd2.Cmd.path_complete
 
@@ -124,6 +123,49 @@ class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
         routines = self.get_configuration_routines()
         routines.load()
 
-        routines.open_houdini(houdini, [])
+        routines.open_houdini(houdini, [], self.get_feedback_ui())
 
+    def hip_file_complete(self, text, line, begidx, endidx):
+        ret = []
+        hip_exts = get_hip_extensions(".")
+        paths = self.path_complete(text, line, begidx, endidx)
+        for p in paths:
+            base, ext = os.path.splitext(p)
+            if ext.lower() in hip_exts:
+                ret.append(p)
 
+    def complete_batch_render(self, text, line, begidx, endidx):
+        return self.index_based_complete(text, line, begidx, endidx,
+                                         {1: self.houdini_install_complete, 2: self.hip_file_complete, 3: None})
+
+    def do_batch_render(self, args):
+        """Batch renders the given hip file with the given rop path.
+
+        batch_render [houdini_install] [file] [rop_path]
+
+        houdini_install:  The name of the houdini install to use to render
+        file: The path to the hip file.
+        rop_path:  The path to the rop to render in the file."""
+        args = self.parse_arguments(args)
+
+        if len(args) < 1:
+            self.perror("No houdini_install specified.")
+            return
+
+        if len(args) < 2:
+            self.perror("No file specified.")
+            return
+
+        if len(args) < 3:
+            self.perror("No rop_path specified.")
+            return
+
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = HoudiniInstallsManager(user)
+        houdini = man.get_by_name(args[0])
+
+        routines = self.get_configuration_routines()
+        routines.load()
+
+        routines.batch_render_hip_files(houdini, [args[1]], [args[2]], self.get_feedback_ui())

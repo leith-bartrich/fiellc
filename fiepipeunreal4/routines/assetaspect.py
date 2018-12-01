@@ -8,13 +8,14 @@ from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
 from fiepipeunreal4.data.installs import Unreal4Install
 from fiepipelib.applauncher.genericlauncher import listlauncher
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines
+from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
 
 class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
-    _asset_path: str = None
 
-    def __init__(self, asset_path: str):
-        self._asset_path = asset_path
-        super(UnrealAspectConfigurationRoutines, self).__init__(UnrealAssetAspectConfiguration(self._asset_path))
+    def __init__(self, asset_routines:GitAssetRoutines):
+        asset_routines.load()
+        asset_path = asset_routines.abs_path
+        super(UnrealAspectConfigurationRoutines, self).__init__(UnrealAssetAspectConfiguration(asset_path),asset_routines)
 
     def default_configuration(self):
         self.get_configuration().from_parameters([])
