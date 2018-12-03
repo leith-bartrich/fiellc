@@ -39,6 +39,9 @@ setup(
         'fiepipe.houdini.houdini_job_paths': [
             'fiellc = fiellclib.routines.houdini_paths:houdini_job_paths'
         ],
+        'fiepipe.plugin.watchfolder.watch': [
+            'houdini = fiepipehoudini.routines.watchfolder_simplegeo:watch'
+        ],
 
     },
     long_description=read('README.txt'),
