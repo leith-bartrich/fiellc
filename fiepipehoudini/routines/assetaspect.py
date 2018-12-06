@@ -4,14 +4,15 @@ import pathlib
 import shlex
 import typing
 
+from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
+from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
-from fiepipehoudini.data.installs import HoudiniInstall
+from fiepipehoudini.data.installs import HoudiniInstall, HoudiniInstallsManager
 from fiepipehoudini.routines.houdini_paths import get_houdini_site_paths, get_houdini_job_paths
 from fiepipelib.applauncher.genericlauncher import listlauncher
 from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
 from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
-
 
 class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAssetAspectConfiguration]):
 
@@ -47,6 +48,14 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
         if houdini_project_dir in project_dirs:
             project_dirs.remove(houdini_project_dir)
 
+    def get_default_houdini(self) -> HoudiniInstall:
+        #TODO: MUCH BETTER SYSTEM NEEDED HERE!
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = HoudiniInstallsManager(user)
+        all_houdinis = man.GetAll()
+        return all_houdinis[len(all_houdinis) -1]
+
     def open_houdini(self, houdini_install: HoudiniInstall, args: typing.List[str], feedback_ui:AbstractFeedbackUI):
         launch_args = []
         exec_path = os.path.join(houdini_install.get_path(), houdini_install.get_executable())
@@ -69,26 +78,29 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
             launch_args.append(k + "=" + v)
         for c in commands:
             launch_args.append("-c")
-            launch_args.append(shlex.quote(c))
+            launch_args.append(c)
         if non_graphic_license:
             launch_args.append("-R")
         for f in file_list:
-            launch_args.append(shlex.quote(f))
+            launch_args.append(f)
         launcher = listlauncher(launch_args, env_vars)
-        launcher.launch()
+        return launcher.launch()
 
     def batch_render_hip_files(self, houdini_install: HoudiniInstall, hip_files: typing.List[str],
                                rop_node_paths: typing.List[str],
                                feedback_ui:AbstractFeedbackUI,
-                               non_graphic_license: bool = False
+                               non_graphic_license: bool = False,
+                               skip_quit = False
                                ):
         commands = []
         for rop_node_path in rop_node_paths:
             commands.append("render " + rop_node_path)
+        if not skip_quit:
+            commands.append("q")
         #env_vars = {}
         env_vars = self._get_houdini_env(houdini_install,feedback_ui)
         #env_vars["HOUDINI_PATH"] = os.pathsep.join(self._get_houdini_paths(houdini_install,feedback_ui))
-        self._run_hbatch(houdini_install, non_graphic_license, hip_files, commands, env_vars)
+        return self._run_hbatch(houdini_install, non_graphic_license, hip_files, commands, env_vars)
 
     def _get_houdini_env(self, install:HoudiniInstall, feedback_ui:AbstractFeedbackUI) -> typing.Dict[str,str]:
         ret = {}
