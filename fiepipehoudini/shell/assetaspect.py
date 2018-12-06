@@ -168,4 +168,40 @@ class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
         routines = self.get_configuration_routines()
         routines.load()
 
-        routines.batch_render_hip_files(houdini, [args[1]], [args[2]], self.get_feedback_ui())
+        self.do_coroutine(routines.batch_render_hip_files_routine(houdini, [args[1]], [args[2]], self.get_feedback_ui()))
+
+    def complete_hython_module(self, text, line, begidx, endidx):
+        return self.index_based_complete(text, line, begidx, endidx, {1: self.houdini_install_complete})
+
+    def do_hython_module(self, args):
+        """Runs the given module with the given arguments in houdini python (hython).
+
+        Usage hython_module [houdini_install] [module] {[arg] ...}
+
+        houdini_install: The houdini install to use
+        module: The python module to run
+        arg: Optional arguments to pass to python's sys.argv
+        """
+        args = self.parse_arguments(args)
+
+        if len(args) < 1:
+            self.perror("No houdini_install given.")
+            return
+        if len(args) < 2:
+            self.perror("No module given.")
+            return
+
+        plat = get_local_platform_routines()
+        user = LocalUserRoutines(plat)
+        man = HoudiniInstallsManager(user)
+        houdini = man.get_by_name(args[0])
+
+        module_name = args[1]
+
+        py_args = args[2:]
+
+        routines = self.get_configuration_routines()
+        routines.load()
+
+        self.do_coroutine(routines.run_hython_script_routine(houdini,module_name,py_args,self.get_feedback_ui()))
+

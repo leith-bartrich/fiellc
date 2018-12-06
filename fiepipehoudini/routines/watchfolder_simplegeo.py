@@ -73,8 +73,8 @@ class HIPProcessThread(object):
         shutil.move(self._geo_file_path, geo_file_path)
 
         hou_routines = HoudiniAspectConfigurationRoutines(asset_routines)
-        app = hou_routines.batch_render_hip_files(hou_routines.get_default_houdini(), [hip_file_path], ['simple_geo'],
-                                                  self._watcher_routines.feedback_ui,skip_quit=False)
+        app = hou_routines.batch_render_hip_files_routine(hou_routines.get_default_houdini(), [hip_file_path], ['simple_geo'],
+                                                          self._watcher_routines.feedback_ui, skip_quit=False)
         # communiacte is safer than wait
         app.communicate()
         out_dir_path = os.path.join(self._dest_dir_path, geo_filename)

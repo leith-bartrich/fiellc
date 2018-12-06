@@ -9,7 +9,7 @@ from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-def houdini_site_paths(fqdn: str, contaier_id: str, root_id: str,
+async def houdini_site_paths(fqdn: str, contaier_id: str, root_id: str,
                        asset_id: str, feedback_ui: AbstractFeedbackUI) -> typing.List[str]:
     # only work for fie.us or subdomains
     if not fiepipelib.fqdn.is_dommain_or_subdomain(fqdn, "fie.us"):
@@ -34,7 +34,7 @@ def houdini_site_paths(fqdn: str, contaier_id: str, root_id: str,
     return ret
 
 
-def houdini_job_paths(fqdn: str, contaier_id: str, root_id: str,
+async def houdini_job_paths(fqdn: str, contaier_id: str, root_id: str,
                       asset_id: str, feedback_ui: AbstractFeedbackUI) -> typing.List[str]:
     # only work for fie.us or subdomains
     if not fiepipelib.fqdn.is_dommain_or_subdomain(fqdn, "fie.us"):

@@ -86,51 +86,66 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
         launcher = listlauncher(launch_args, env_vars)
         return launcher.launch()
 
-    def batch_render_hip_files(self, houdini_install: HoudiniInstall, hip_files: typing.List[str],
-                               rop_node_paths: typing.List[str],
-                               feedback_ui:AbstractFeedbackUI,
-                               non_graphic_license: bool = False,
-                               skip_quit = False
-                               ):
+    def _run_hython_module(self, houdini_install: HoudiniInstall,module_name:str, env_vars: typing.Dict[str, str] = {}, py_args:typing.List[str] = []):
+        launch_args = []
+        exec_path = os.path.join(houdini_install.get_path(), "bin", "hython")
+        launch_args.append(exec_path)
+        launch_args.append("-m")
+        launch_args.append(module_name)
+        launch_args.extend(py_args)
+
+        launcher = listlauncher(launch_args, env_vars)
+        return launcher.launch()
+
+    async def batch_render_hip_files_routine(self, houdini_install: HoudiniInstall, hip_files: typing.List[str],
+                                             rop_node_paths: typing.List[str],
+                                             feedback_ui:AbstractFeedbackUI,
+                                             non_graphic_license: bool = False,
+                                             skip_quit = False
+                                             ):
         commands = []
         for rop_node_path in rop_node_paths:
             commands.append("render " + rop_node_path)
         if not skip_quit:
             commands.append("q")
         #env_vars = {}
-        env_vars = self._get_houdini_env(houdini_install,feedback_ui)
+        env_vars = await self._get_houdini_env(houdini_install,feedback_ui)
         #env_vars["HOUDINI_PATH"] = os.pathsep.join(self._get_houdini_paths(houdini_install,feedback_ui))
         return self._run_hbatch(houdini_install, non_graphic_license, hip_files, commands, env_vars)
 
-    def _get_houdini_env(self, install:HoudiniInstall, feedback_ui:AbstractFeedbackUI) -> typing.Dict[str,str]:
+    async def run_hython_script_routine(self, install:HoudiniInstall, module_name:str, py_args:typing.List[str], feedback_ui:AbstractFeedbackUI):
+        env_vars = await self._get_houdini_env(install,feedback_ui)
+        return self._run_hython_module(install,module_name,env_vars,py_args)
+
+    async def _get_houdini_env(self, install:HoudiniInstall, feedback_ui:AbstractFeedbackUI) -> typing.Dict[str,str]:
         ret = {}
 
-        ret['HSITE'] = self._get_houdini_site_path(install,feedback_ui)
-        ret['JOB'] = self._get_houdini_job_path(install,feedback_ui)
+        ret['HSITE'] = await self._get_houdini_site_path(install,feedback_ui)
+        ret['JOB'] = await self._get_houdini_job_path(install,feedback_ui)
 
         return ret
 
-    def _get_houdini_job_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
+    async def _get_houdini_job_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()
         fqdn = asset_routines.container.GetFQDN()
         container_id = asset_routines._container_id
         root_id = asset_routines._root_id
         asset_id = asset_routines._asset_id
-        job_paths = get_houdini_job_paths(fqdn, container_id, root_id, asset_id, feedback_ui)
+        job_paths = await get_houdini_job_paths(fqdn, container_id, root_id, asset_id, feedback_ui)
         if len(job_paths) >= 1:
             return job_paths[0]
         else:
             return ""
 
-    def _get_houdini_site_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
+    async def _get_houdini_site_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()
         fqdn = asset_routines.container.GetFQDN()
         container_id = asset_routines._container_id
         root_id = asset_routines._root_id
         asset_id = asset_routines._asset_id
-        site_paths = get_houdini_site_paths(fqdn, container_id, root_id, asset_id, feedback_ui)
+        site_paths = await get_houdini_site_paths(fqdn, container_id, root_id, asset_id, feedback_ui)
         if len(site_paths) >= 1:
             return site_paths[0]
         else:
