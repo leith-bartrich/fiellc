@@ -27,6 +27,8 @@ setup(
         'fiepipe.pluign.templates.file': 'fiellc = fiellc:FileTemplates',
         'console_scripts': [
             'fiellc = fiellc:main',
+            'watchfolder_docs_fiellc = watchfolders:docs',
+            'watchfolder_icloud_fiellc = watchfolders:icloud',
         ],
         'fiepipe.plugin.loosefiles.lfs.extensions': [
             'fiellc = fiepipecommonfiletypes.data.lfs_tracked_patterns:get_common_extensions',

@@ -56,13 +56,13 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
         all_houdinis = man.GetAll()
         return all_houdinis[len(all_houdinis) -1]
 
-    def open_houdini(self, houdini_install: HoudiniInstall, args: typing.List[str], feedback_ui:AbstractFeedbackUI):
+    async def open_houdini_routine(self, houdini_install: HoudiniInstall, args: typing.List[str], feedback_ui:AbstractFeedbackUI):
         launch_args = []
         exec_path = os.path.join(houdini_install.get_path(), houdini_install.get_executable())
         launch_args.append(exec_path)
         launch_args.extend(args)
         #houdini_env = {}
-        houdini_env = self._get_houdini_env(houdini_install,feedback_ui)
+        houdini_env = await self._get_houdini_env(houdini_install,feedback_ui)
         #houdini_env["HOUDINI_PATH"] = os.pathsep.join(self._get_houdini_paths(houdini_install,feedback_ui))
         launcher = listlauncher(launch_args, houdini_env)
         launcher.launch()

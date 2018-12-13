@@ -70,13 +70,35 @@ class HIPProcessThread(object):
         blah, geo_filename = os.path.split(self._geo_file_path)
         geo_basename, geo_ext = os.path.splitext(geo_filename)
         geo_file_path = os.path.join(working_dir_path, "in" + geo_ext)
-        shutil.move(self._geo_file_path, geo_file_path)
+        try:
+            shutil.move(self._geo_file_path, geo_file_path)
+        except FileNotFoundError:
+            await self._watcher_routines.feedback_ui.warn("File not found.  Moving on.")
+            shutil.rmtree(working_dir_path, ignore_errors=True)
+            return
 
         hou_routines = HoudiniAspectConfigurationRoutines(asset_routines)
-        app = hou_routines.batch_render_hip_files_routine(hou_routines.get_default_houdini(), [hip_file_path], ['simple_geo'],
+        app = await hou_routines.batch_render_hip_files_routine(hou_routines.get_default_houdini(), [hip_file_path], ['simple_geo'],
                                                           self._watcher_routines.feedback_ui, skip_quit=False)
-        # communiacte is safer than wait
+        # communicate is safer than wait
         app.communicate()
+
+        #rename out files.
+        out_files = []
+        #find them
+        for filename in os.listdir(working_dir_path):
+            if filename.startswith("out."):
+                out_files.append(filename)
+        #rename them
+        for out_filename in out_files:
+            out_filename_path = os.path.join(working_dir_path,out_filename)
+            base,ext = os.path.splitext(out_filename)
+            new_filename_base = base.replace("out",geo_basename,1)
+            new_filename = new_filename_base + ext
+            new_filename_path = os.path.join(working_dir_path,new_filename)
+            shutil.move(out_filename_path,new_filename_path)
+
+        #move processing dir to output location
         out_dir_path = os.path.join(self._dest_dir_path, geo_filename)
         if os.path.exists(out_dir_path):
             shutil.rmtree(out_dir_path, ignore_errors=True)
@@ -120,6 +142,7 @@ class HIPProcessorRoutines(FolderRoutines):
         pass
 
     def on_file_created(self, event: FileCreatedEvent):
+        print ("created: " + event.src_path)
         if self.is_geo_file(event.src_path):
             self.do_file(event.src_path)
 
@@ -133,6 +156,7 @@ class HIPProcessorRoutines(FolderRoutines):
         pass
 
     def on_file_modified(self, event: FileModifiedEvent):
+        print ("modified: " + event.src_path)
         if self.is_geo_file(event.src_path):
             self.do_file(event.src_path)
 
@@ -154,7 +178,12 @@ class HIPFilesRoutines(FolderRoutines):
         self._watchers = {}
         self._watch_dir_path = watch_dir_path
         self._proc_dir_path = proc_dir_path
+        in_dir_path = os.path.join(watch_dir_path, get_in_subpath())
+        if os.path.exists(in_dir_path):
+            shutil.rmtree(in_dir_path, ignore_errors=True)
         super().__init__(watcher, hip_dir_path)
+
+
 
     def is_hip_file(self, path: str) -> bool:
         base, ext = os.path.splitext(path)

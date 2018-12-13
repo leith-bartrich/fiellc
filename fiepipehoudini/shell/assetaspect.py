@@ -123,7 +123,7 @@ class HoudiniAssetAspectCommand(ConfigCommand[HoudiniAssetAspectConfiguration]):
         routines = self.get_configuration_routines()
         routines.load()
 
-        routines.open_houdini(houdini, [], self.get_feedback_ui())
+        self.do_coroutine(routines.open_houdini_routine(houdini, [], self.get_feedback_ui()))
 
     def hip_file_complete(self, text, line, begidx, endidx):
         ret = []
