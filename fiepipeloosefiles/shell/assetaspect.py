@@ -22,7 +22,9 @@ class LooseFilesAspectConfigCommand(ConfigCommand[LooseFilesAspectConfiguration]
         return LooseFilesAspectConfiguration(asset_path)
 
     def get_configuration_routines(self) -> LooseFilesAspectConfigurationRoutines:
-        return LooseFilesAspectConfigurationRoutines(self.get_configuration_data())
+        asset_routines = self.get_asset_shell().get_routines()
+        asset_routines.load()
+        return LooseFilesAspectConfigurationRoutines(self.get_configuration_data(),asset_routines)
 
     def do_add_ignore_extension(self, args):
         """Adds a file extension to ignore.
