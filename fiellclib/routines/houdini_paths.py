@@ -10,7 +10,7 @@ from fieui.FeedbackUI import AbstractFeedbackUI
 
 
 async def houdini_site_paths(fqdn: str, contaier_id: str, root_id: str,
-                       asset_id: str, feedback_ui: AbstractFeedbackUI) -> typing.List[str]:
+                             asset_id: str, feedback_ui: AbstractFeedbackUI) -> typing.List[str]:
     # only work for fie.us or subdomains
     if not fiepipelib.fqdn.is_dommain_or_subdomain(fqdn, "fie.us"):
         return []
@@ -19,11 +19,11 @@ async def houdini_site_paths(fqdn: str, contaier_id: str, root_id: str,
     ret = []
     # TODO: pull from github here
 
-    #at fie, we have a company wide hsite toolset in the user's Documents folder, for now.
+    # at fie, we have a company wide hsite toolset in the user's Documents folder, for now.
 
-    #an alternative, might be to have a checkout of such a toolset in each asset.  Which would keep
-    #the toolset's checkout versioned.  Especially if it were an asset itself.
-    #we could also switch to different toolsets based on asset configuration here too.
+    # an alternative, might be to have a checkout of such a toolset in each asset.  Which would keep
+    # the toolset's checkout versioned.  Especially if it were an asset itself.
+    # we could also switch to different toolsets based on asset configuration here too.
 
     plat = get_local_platform_routines()
     user = LocalUserRoutines(plat)
@@ -35,7 +35,7 @@ async def houdini_site_paths(fqdn: str, contaier_id: str, root_id: str,
 
 
 async def houdini_job_paths(fqdn: str, contaier_id: str, root_id: str,
-                      asset_id: str, feedback_ui: AbstractFeedbackUI) -> typing.List[str]:
+                            asset_id: str, feedback_ui: AbstractFeedbackUI) -> typing.List[str]:
     # only work for fie.us or subdomains
     if not fiepipelib.fqdn.is_dommain_or_subdomain(fqdn, "fie.us"):
         return []
@@ -43,8 +43,8 @@ async def houdini_job_paths(fqdn: str, contaier_id: str, root_id: str,
     # go!
     ret = []
 
-    #at fie we set the job to the asset's working directory.
-    #though we could also pull from the asset configuration here too.
+    # at fie we set the job to the asset's working directory.
+    # though we could also pull from the asset configuration here too.
 
     plat = get_local_platform_routines()
     user = LocalUserRoutines(plat)
@@ -57,3 +57,5 @@ async def houdini_job_paths(fqdn: str, contaier_id: str, root_id: str,
     ret.append(asset_working_path)
 
     return ret
+
+
