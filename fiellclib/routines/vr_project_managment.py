@@ -1,156 +1,11 @@
-import os
-import os.path
-import shutil
-import pathlib
-import asyncio
-import typing
-import abc
-
+from fiepipelib.assetaspect.routines.structure import AbstractDirPath, StaticSubDir, \
+    AbstractDesktopProjectRootBasePath
+from fiepipelib.gitlabserver.routines.gitlabserver import GitLabServerRoutines
 from fiepipelib.gitstorage.routines.gitroot import GitRootRoutines
-from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
-from fiepipelib.gitlabserver.data.gitlab_server import GitLabServer
+from fiepipelib.gitstorage.routines.gitlab_server import GitLabFQDNGitRootRoutines
+from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-class AbstractPath(abc.ABC):
-
-    @abc.abstractmethod
-    def get_path(self) -> str:
-        raise NotImplementedError
-
-
-class AbstractDirPath(AbstractPath, abc.ABC):
-
-    @abc.abstractmethod
-    def get_subpaths(self) -> typing.List[AbstractPath]:
-        raise NotImplementedError
-
-
-class AbstractSubPath(AbstractPath, abc.ABC):
-    _parent_path: AbstractDirPath = None
-
-    def get_parent_path(self) -> AbstractDirPath:
-        return self._parent_path
-
-    def __init__(self, parent_path: AbstractDirPath):
-        self._parent_path = parent_path
-
-
-class AbstractGitStorageBasePath(AbstractDirPath):
-    _subpaths: typing.List[AbstractSubPath] = None
-
-    def get_subpaths(self) -> typing.List[AbstractSubPath]:
-        return self._subpaths.copy()
-
-    def add_subpath(self, subpath: AbstractSubPath):
-        subpath._parent_path = self
-        self._subpaths.append(subpath)
-
-
-class AbstractRootBasePath(AbstractGitStorageBasePath):
-    _root_routines: GitRootRoutines = None
-
-    def get_routines(self):
-        return self._root_routines
-
-    def __init__(self, routines: GitRootRoutines):
-        self._root_routines = routines
-
-    def get_path(self) -> str:
-        return self._root_routines.get_local_repo_path()
-
-
-class AbstractAssetBasePath(AbstractGitStorageBasePath):
-    _asset_routines: GitAssetRoutines
-
-    def get_routines(self):
-        return self._asset_routines
-
-    def __init__(self, routines: GitAssetRoutines):
-        self._asset_routines = routines
-
-    def get_path(self) -> str:
-        return self._asset_routines.abs_path
-
-
-class StaticSubDir(AbstractSubPath, AbstractDirPath):
-    _dirname: str = None
-    _subpaths: typing.List[AbstractSubPath] = None
-
-    def get_dirname(self) -> str:
-        return self._dirname
-
-    def get_subpaths(self) -> typing.List[AbstractSubPath]:
-        return self._subpaths.copy()
-
-    def __init__(self, dirname: str, parent_path: AbstractDirPath):
-        self._subpaths = []
-        self._dirname = dirname
-        super().__init__(parent_path)
-
-    def add_subpath(self, subpath: AbstractSubPath):
-        subpath._parent_path = self
-        self._subpaths.append(subpath)
-
-    def get_path(self) -> str:
-        return os.path.join(self.get_parent_path().get_path(), self._dirname)
-
-
-class AbstractSubAsset(AbstractSubPath):
-
-    @abc.abstractmethod
-    def get_asset_id(self) -> str:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_asset_name(self) -> str:
-        raise NotImplementedError
-
-    def get_path(self) -> str:
-        return os.path.join(self.get_parent_path().get_path(), self.get_asset_name())
-
-
-class StaticSubAsset(AbstractSubAsset):
-    _asset_id: str = None
-    _asset_name: str = None
-
-    def get_asset_id(self):
-        return self._asset_id
-
-    def get_asset_name(self):
-        return self._asset_name
-
-    def __init__(self, parent_path: AbstractDirPath, asset_id: str, asset_name: str):
-        self._asset_id = asset_id
-        self._asset_name = asset_name
-        super().__init__(parent_path)
-
-
-class AbstractGitLabSubmodule(AbstractSubPath):
-
-    @abc.abstractmethod
-    def get_submod_dir_name(self) -> str:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def get_submod_url(self) -> str:
-        raise NotImplementedError()
-
-
-class FIEPipeGitLabSubmodule(AbstractGitLabSubmodule):
-    _server: GitLabServer = None
-
-    def get_server(self):
-        return self._server
-
-    def set_server(self, server: GitLabServer):
-        self._server = server
-
-    def __init__(self, default_server: GitLabServer, parent_path: AbstractDirPath):
-        super().__init__(parent_path)
-        self._server = default_server
-
-    def get_path(self) -> str:
-        return os.path.join(self.get_parent_path().get_path(), self.get_submod_dir_name())
 
 
 class DesignDocsTypeDir(StaticSubDir):
@@ -229,7 +84,7 @@ class ProductionTypeDir(StaticSubDir):
         super().__init__(typename, parent_path)
 
 
-class ProductionUnrealProjectsPath(StaticSubDir):
+class ProductionUnrealProjectsPath(ProductionTypeDir):
 
     def __init__(self, parent_path: AbstractDirPath):
         super().__init__("unreal_projects", parent_path)
@@ -249,7 +104,7 @@ class ProductionPath(StaticSubDir):
         self._environments = ProductionTypeDir("environments", self)
         self.add_subpath(self._environments)
 
-        self._characters = ProductionTypeDir("characters"), self)
+        self._characters = ProductionTypeDir("characters", self)
         self.add_subpath(self._characters)
 
         self._props = ProductionTypeDir("props", self)
@@ -259,29 +114,16 @@ class ProductionPath(StaticSubDir):
         self.add_subpath(self._vehicles)
 
         self._unreal_projects = ProductionUnrealProjectsPath(self)
-        self.add_subpath(self._unreal_projects
+        self.add_subpath(self._unreal_projects)
 
 
-class HoudiniToolsPath(FIEPipeGitLabSubmodule):
-
-    def get_submod_dir_name(self) -> str:
-        return "houdini_tools"
-
-    def get_submod_url(self) -> str:
-        return self.get_server().get_ssh_url("leith", "houdini_tools.git")
-
-    def __init__(self, default_server: GitLabServer, parent_path: AbstractDirPath):
-        super().__init__(default_server, parent_path)
-
-
-class MRProjectDesktopRootBasePath(AbstractRootBasePath):
+class MRProjectDesktopRootBasePath(AbstractDesktopProjectRootBasePath):
     _development: DevelopmentPath = None
     _distribution: DistributionPath = None
     _production: ProductionPath = None
-    _houdini_tools: HoudiniToolsPath = None
 
-    def __init__(self, routines: GitRootRoutines, gitlab_server: GitLabServer):
-        super().__init__(routines)
+    def __init__(self, routines: GitRootRoutines, gitlab_server_name: str):
+        super().__init__(gitlab_server_name, routines)
 
         self._development = DevelopmentPath(self)
         self.add_subpath(self._development)
@@ -292,5 +134,92 @@ class MRProjectDesktopRootBasePath(AbstractRootBasePath):
         self._production = ProductionPath(self)
         self.add_subpath(self._production)
 
-        self._houdini_tools = HoudiniToolsPath(gitlab_server, self)
-        self.add_subpath(self._houdini_tools)
+    def get_gitlab_root_routines(self) -> GitLabFQDNGitRootRoutines:
+        gitlab_server_routines = GitLabServerRoutines(self.get_gitlab_server_name())
+        root_routines = self.get_routines()
+        return GitLabFQDNGitRootRoutines(gitlab_server_routines,root_routines.root,root_routines.root_config)
+
+
+    async def auto_update_routine(self, feedback_ui:AbstractFeedbackUI):
+        """Root auto update behavior is as follows:
+
+        auto_update all submodules/children first.
+
+        If we're dirty(not_submodule) we tell the user to keep working and either commit or revert.  done.
+
+        If we're ahead, we push.
+
+        If we're behind or detached, we pull.
+
+        If we're ahead and behind, we pull and check for success or failure.
+
+            Upon failure, (due to conflict) we inform the user they'll need to merge. done.
+
+            Upon success, done.
+
+
+        """
+
+        #TODO: update all children first.
+
+        is_ahead = self.remote_is_behind()
+        is_behind = self.remote_is_ahead()
+        is_detached = self.is_detached()
+
+        root_routines = self.get_routines()
+        gitlab_root_routines = self.get_gitlab_root_routines()
+        repo = root_routines.get_local_repo()
+
+        is_dirty = repo.is_dirty(index=True,working_tree=True,untracked_files=True,submodules=False)
+
+        unmerged_blobs = repo.index.unmerged_blobs()
+
+        #checking for conflicts
+        conflicted = False
+        for path in unmerged_blobs:
+            list_of_blobs = unmerged_blobs[path]
+            for (stage, blob) in list_of_blobs:
+                # Now we can check each stage to see whether there were any conflicts
+                if stage != 0:
+                    conflicted = True
+        if conflicted:
+            await feedback_ui.warn(self.get_path() + " is conflicted.")
+            await feedback_ui.output("You will need to resolve conflicts or cancel the merge.")
+            return
+
+
+        #dirty disables auto upating until it's no longer dirty.
+        if is_dirty:
+            await feedback_ui.warn(self.get_path() + " is dirty.")
+            await feedback_ui.output("Once you are done making changes, you'll want to either commit them, or revert them; to resume auto updating.")
+            if is_behind:
+                await feedback_ui.warn(self.get_path() + " has upstream changes.")
+                await feedback_ui.output("You may wish to merge in the changes, or you could wait.")
+            return
+
+        #ahead and not behind or detached, is a push.
+        if is_ahead and not (is_behind or is_detached):
+            await gitlab_root_routines.push(feedback_ui)
+            return
+
+        #any pull could leave us conflicted.  If we are left conflicted, it's handled the next time we auto-update.
+
+        #behind or detached, is a pull.
+        if not is_ahead and (is_behind or is_detached):
+            await gitlab_root_routines.pull(feedback_ui)
+            return
+
+        #ahead and behind is a pull.
+        if is_ahead and (is_behind or is_detached):
+            await gitlab_root_routines.pull(feedback_ui)
+            return
+
+        #most likely, we're up to date and clean.  with the exception of submodules, which may be even more up to date.
+        return
+
+
+
+
+
+
+
