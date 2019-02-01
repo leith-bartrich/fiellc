@@ -2,12 +2,14 @@ import typing
 import os
 import os.path
 
+from fiepipelib.assetaspect.routines.config import AutoConfigurationResult
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines,LocalPlatformUnixRoutines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipelib.assetaspect.data.simpleapplication import AbstractSimpleApplicationInstallsManager
 from fiepiperpgmakermv.data.aspectconfig import RPGMakerMVAspectConfiguration
 from fiepiperpgmakermv.data.installs import RPGMakerMVInstallManager, RPGMakerMVInstall
 from fiepipelib.assetaspect.routines.simpleapplication import AbstractSimpleFiletypeAspectConfigurationRoutines, T
+from fieui.FeedbackUI import AbstractFeedbackUI
 
 
 class RPGMakerMVAspectConfigurationRoutines(AbstractSimpleFiletypeAspectConfigurationRoutines[RPGMakerMVAspectConfiguration]):
@@ -28,5 +30,9 @@ class RPGMakerMVAspectConfigurationRoutines(AbstractSimpleFiletypeAspectConfigur
     def default_configuration(self):
         self.get_configuration().from_parameters()
 
-    async def reconfigure(self):
+    async def reconfigure_interactive_routine(self):
         pass
+
+    async def auto_reconfigure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
+        pass
+

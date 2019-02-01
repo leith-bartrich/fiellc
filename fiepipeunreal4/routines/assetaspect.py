@@ -3,12 +3,14 @@ import os.path
 import pathlib
 import typing
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines, AutoConfigurationResult
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
 from fiepipeunreal4.data.installs import Unreal4Install
 from fiepipelib.applauncher.genericlauncher import listlauncher
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines
 from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
+from fieui.FeedbackUI import AbstractFeedbackUI
+
 
 class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
 
@@ -20,7 +22,10 @@ class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetA
     def default_configuration(self):
         self.get_configuration().from_parameters([])
 
-    async def reconfigure(self):
+    async def reconfigure_interactive_routine(self):
+        pass
+
+    async def auto_reconfigure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
         pass
 
     def find_uproject_files(self) -> typing.List[str]:

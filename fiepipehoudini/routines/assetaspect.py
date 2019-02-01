@@ -10,7 +10,7 @@ from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
 from fiepipehoudini.data.installs import HoudiniInstall, HoudiniInstallsManager
 from fiepipehoudini.routines.houdini_paths import get_houdini_site_paths, get_houdini_job_paths
 from fiepipelib.applauncher.genericlauncher import listlauncher
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines, AutoConfigurationResult
 from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
 
@@ -25,7 +25,10 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
     def default_configuration(self):
         self.get_configuration().from_parameters([])
 
-    async def reconfigure(self):
+    async def reconfigure_interactive_routine(self):
+        pass
+
+    async def auto_reconfigure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
         pass
 
     def add_project(self, houdini_project_path: str):
