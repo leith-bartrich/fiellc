@@ -2,7 +2,7 @@ import typing
 
 from fiepipe3dcoat.coat import CoatLocalManager,coat, FromParameters
 from fiepipelib.locallymanagedtypes.data.abstractmanager import AbstractUserLocalTypeManager
-from fiepipelib.locallymanagedtypes.routines.localmanaged import AbstractLocalManagedRoutines
+from fiepipelib.locallymanagedtypes.routines.localmanaged import AbstractLocalManagedInteractiveRoutines
 
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
@@ -11,7 +11,7 @@ from fiepipelib.ui.abspath_input_ui import AbstractAbspathInputUI
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-class CoatLocalManagerRoutines(AbstractLocalManagedRoutines[coat]):
+class CoatLocalManagerInteractiveRoutines(AbstractLocalManagedInteractiveRoutines[coat]):
 
     _abspath_input_ui:AbstractAbspathInputUI = None
 

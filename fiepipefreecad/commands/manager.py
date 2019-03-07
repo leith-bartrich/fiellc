@@ -2,15 +2,15 @@ import typing
 
 import fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand
 import fiepipelib.shells.AbstractShell
-from fiepipefreecad.routines.manager import FreeCADLocalManagerRoutines
+from fiepipefreecad.routines.manager import FreeCADLocalManagerInteractiveRoutines
 from fiepipelib.shells.AbstractShell import AbstractShell
 from fiepipelib.shells.ui.abspath_input_ui import AbspathInputUI
 
 
 class FreeCADSystemCommand(fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand.LocalManagedTypeCommand):
 
-    def get_routines(self) -> FreeCADLocalManagerRoutines:
-        return FreeCADLocalManagerRoutines(self.get_feedback_ui(), AbspathInputUI(self))
+    def get_routines(self) -> FreeCADLocalManagerInteractiveRoutines:
+        return FreeCADLocalManagerInteractiveRoutines(self.get_feedback_ui(), AbspathInputUI(self))
 
     def get_shell(self, item) -> AbstractShell:
         self.poutput("Entering a FreeCAD instance is currently not supported.")

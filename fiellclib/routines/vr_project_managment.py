@@ -1,45 +1,62 @@
 import typing
 
-from fiepipelib.assetaspect.routines.config import AutoConfigurationResult
-from fiepipelib.assetaspect.routines.structure import AbstractDirPath, StaticSubDir, \
-    AbstractDesktopProjectRootBasePath, AssetsStaticSubDir, AbstractAssetBasePath, AutoUpdateResults, \
-    AbstractDesktopProjectAssetBasePath, GenericAssetBasePathsSubDir, AutoCreateResults, AutoConfigureResults
-from fiepipelib.gitlabserver.routines.gitlabserver import GitLabServerRoutines
-from fiepipelib.gitstorage.routines.gitroot import GitRootRoutines
-from fiepipelib.gitstorage.routines.gitlab_server import GitLabFQDNGitRootRoutines
-from fieui.FeedbackUI import AbstractFeedbackUI
-from fiepiperpgmakermv.routines.aspectconfig import RPGMakerMVAspectConfigurationRoutines, RPGMakerMVAspectConfiguration
-from fiepipelib.enum import WorseEnum
+from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
+from fiepipelib.assetstructure.routines.structure import AbstractDirPath, StaticSubDir, \
+    AbstractDesktopProjectRootBasePath, AbstractAssetBasePath, AbstractDesktopProjectAssetBasePath, \
+    GenericAssetBasePathsSubDir
 from fiepipelib.enum import get_worse_enum
+from fiepipelib.gitstorage.routines.gitroot import GitRootInteractiveRoutines
+from fiepiperpgmakermv.routines.aspectconfig import RPGMakerMVAspectConfigurationRoutines, RPGMakerMVAspectConfiguration
+from fieui.FeedbackUI import AbstractFeedbackUI
+from fiepipelib.automanager.data.localconfig import LegalEntityConfig, ContainerConfig
+from fiepipelib.gitstorage.routines.gitroot import GitRootRoutines
 
 class MRDesignDocsAssetBasePath(AbstractDesktopProjectAssetBasePath):
 
-    def get_sub_basepaths(self, feedback_ui:AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
         return []
+
 
 class MRProductionAssetBasePath(AbstractDesktopProjectAssetBasePath):
 
-    def get_sub_basepaths(self, feedback_ui:AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
         return []
 
-class MRStoryInteractiveAssetBasePath(AbstractDesktopProjectAssetBasePath):
-
-    def get_sub_basepaths(self, feedback_ui:AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
-        return []
+    def get_houdini_aspect(self) -> HoudiniAspectConfigurationRoutines:
+        asset_routines = self.get_routines()
+        return HoudiniAspectConfigurationRoutines(asset_routines)
 
     async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
         ret = AutoConfigurationResult.NO_CHANGES
 
+        houdini_aspect = self.get_houdini_aspect()
+        ret = get_worse_enum(ret, await houdini_aspect.auto_configure_routine(feedback_ui))
+
+        return ret
+
+
+class MRStoryInteractiveAssetBasePath(AbstractDesktopProjectAssetBasePath):
+
+    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+        return []
+
+    def get_rpgmaker_aspect(self) -> RPGMakerMVAspectConfigurationRoutines:
         asset_routines = self.get_routines()
         asset_abs_path = asset_routines.abs_path
         rpgmaker_conf = RPGMakerMVAspectConfiguration(asset_abs_path)
-        rpgmaker_aspect = RPGMakerMVAspectConfigurationRoutines(rpgmaker_conf,asset_routines)
+        rpgmaker_aspect = RPGMakerMVAspectConfigurationRoutines(rpgmaker_conf, asset_routines)
+        return rpgmaker_aspect
+
+    async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
+        ret = AutoConfigurationResult.NO_CHANGES
+
+        rpgmaker_aspect = self.get_rpgmaker_aspect()
         rpgmaker_resutls = await rpgmaker_aspect.auto_configure_routine(feedback_ui)
 
         ret = get_worse_enum(ret, rpgmaker_resutls)
 
         return ret
-
 
 
 class DesignDocsTypeDir(GenericAssetBasePathsSubDir[MRDesignDocsAssetBasePath]):
@@ -50,11 +67,11 @@ class DesignDocsTypeDir(GenericAssetBasePathsSubDir[MRDesignDocsAssetBasePath]):
     def __init__(self, typename: str, parent_path: AbstractDirPath):
         super().__init__(typename, parent_path)
 
-    def get_asset_basepath_by_dirname(self, dirname:str, feedback_ui:AbstractFeedbackUI) -> MRDesignDocsAssetBasePath:
+    def get_asset_basepath_by_dirname(self, dirname: str, feedback_ui: AbstractFeedbackUI) -> MRDesignDocsAssetBasePath:
         base_path = self.get_base_static_path()
         assert isinstance(base_path, MRProjectDesktopRootBasePath)
         gitlab_server_name = base_path.get_gitlab_server_name()
-        return MRDesignDocsAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui,dirname))
+        return MRDesignDocsAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui, dirname))
 
 
 class DesignDocsDir(StaticSubDir):
@@ -100,11 +117,13 @@ class StoryInteractivePath(GenericAssetBasePathsSubDir[MRStoryInteractiveAssetBa
     def __init__(self, parent_path: AbstractDirPath):
         super().__init__("interactive", parent_path)
 
-    def get_asset_basepath_by_dirname(self, dirname:str, feedback_ui:AbstractFeedbackUI) -> MRStoryInteractiveAssetBasePath:
+    def get_asset_basepath_by_dirname(self, dirname: str,
+                                      feedback_ui: AbstractFeedbackUI) -> MRStoryInteractiveAssetBasePath:
         base_path = self.get_base_static_path()
         assert isinstance(base_path, MRProjectDesktopRootBasePath)
         gitlab_server_name = base_path.get_gitlab_server_name()
-        return MRStoryInteractiveAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui,dirname))
+        return MRStoryInteractiveAssetBasePath(gitlab_server_name,
+                                               self.get_asset_routines_by_dirname(feedback_ui, dirname))
 
 
 class StoryDir(StaticSubDir):
@@ -157,11 +176,11 @@ class ProductionTypeDir(GenericAssetBasePathsSubDir[MRProductionAssetBasePath]):
     def __init__(self, typename: str, parent_path: AbstractDirPath):
         super().__init__(typename, parent_path)
 
-    def get_asset_basepath_by_dirname(self, dirname:str, feedback_ui:AbstractFeedbackUI) -> MRProductionAssetBasePath:
+    def get_asset_basepath_by_dirname(self, dirname: str, feedback_ui: AbstractFeedbackUI) -> MRProductionAssetBasePath:
         base_path = self.get_base_static_path()
         assert isinstance(base_path, MRProjectDesktopRootBasePath)
         gitlab_server_name = base_path.get_gitlab_server_name()
-        return MRProductionAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui,dirname))
+        return MRProductionAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui, dirname))
 
 
 class ProductionUnrealProjectsPath(ProductionTypeDir):
@@ -217,15 +236,12 @@ class ProductionPath(StaticSubDir):
         return self._unreal_projects
 
 
-
-
 class MRProjectDesktopRootBasePath(AbstractDesktopProjectRootBasePath):
-
     _development: DevelopmentPath = None
     _distribution: DistributionPath = None
     _production: ProductionPath = None
 
-    def __init__(self, routines: GitRootRoutines, gitlab_server_name: str):
+    def __init__(self, routines: GitRootInteractiveRoutines, gitlab_server_name: str):
         super().__init__(gitlab_server_name, routines)
 
         self._development = DevelopmentPath(self)
@@ -237,31 +253,26 @@ class MRProjectDesktopRootBasePath(AbstractDesktopProjectRootBasePath):
         self._production = ProductionPath(self)
         self.add_subpath(self._production)
 
-    def get_sub_basepaths(self, feedback_ui:AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
         ret = []
 
         ret.extend(self._development.story.interactive.get_asset_basepaths(feedback_ui))
         ret.extend(self._development.design_docs.environments.get_asset_basepaths(feedback_ui))
-        ret.extend( self._development.design_docs.characters.get_asset_basepaths(feedback_ui))
+        ret.extend(self._development.design_docs.characters.get_asset_basepaths(feedback_ui))
         ret.extend(self._development.design_docs.props.get_asset_basepaths(feedback_ui))
         ret.extend(self._development.design_docs.vehicles.get_asset_basepaths(feedback_ui))
         ret.extend(self._production.environments.get_asset_basepaths(feedback_ui))
         ret.extend(self._production.characters.get_asset_basepaths(feedback_ui))
-        ret.extend( self._production.props.get_asset_basepaths(feedback_ui))
-        ret.extend( self._production.vehicles.get_asset_basepaths(feedback_ui))
-        ret.extend( self._production.unreal_projects.get_asset_basepaths(feedback_ui))
+        ret.extend(self._production.props.get_asset_basepaths(feedback_ui))
+        ret.extend(self._production.vehicles.get_asset_basepaths(feedback_ui))
+        ret.extend(self._production.unreal_projects.get_asset_basepaths(feedback_ui))
 
         return ret
 
     async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
         return AutoConfigurationResult.NO_CHANGES
 
-
-
-
-
-
-
-
-
-
+def automanage_structure(feedback_ui:AbstractFeedbackUI, root_id:str, container_config:ContainerConfig, legal_entity_config:LegalEntityConfig, gitlab_server:str):
+    root_routines = GitRootRoutines(container_config.GetContainerID(),root_id,feedback_ui)
+    root_routines.load()
+    #TODO: check for struct config and do automan

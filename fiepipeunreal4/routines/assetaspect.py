@@ -3,18 +3,19 @@ import os.path
 import pathlib
 import typing
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines, AutoConfigurationResult
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
 from fiepipeunreal4.data.installs import Unreal4Install
 from fiepipelib.applauncher.genericlauncher import listlauncher
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines
-from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
+from fiepipelib.gitstorage.routines.gitasset import GitAssetInteractiveRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
 class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
 
-    def __init__(self, asset_routines:GitAssetRoutines):
+    def __init__(self, asset_routines:GitAssetInteractiveRoutines):
         asset_routines.load()
         asset_path = asset_routines.abs_path
         super(UnrealAspectConfigurationRoutines, self).__init__(UnrealAssetAspectConfiguration(asset_path),asset_routines)

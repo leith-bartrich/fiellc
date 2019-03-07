@@ -2,15 +2,15 @@ import typing
 
 import fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand
 import fiepipelib.localuser.routines.localuser
-from fiepipe3dcoat.routines.manager import CoatLocalManagerRoutines
+from fiepipe3dcoat.routines.manager import CoatLocalManagerInteractiveRoutines
 from fiepipelib.shells.AbstractShell import AbstractShell
 from fiepipelib.shells.ui.abspath_input_ui import AbspathInputUI
 
 
 class CoatSystemCommand(fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand.LocalManagedTypeCommand):
 
-    def get_routines(self) -> CoatLocalManagerRoutines:
-        return CoatLocalManagerRoutines(self.get_feedback_ui(), AbspathInputUI(self))
+    def get_routines(self) -> CoatLocalManagerInteractiveRoutines:
+        return CoatLocalManagerInteractiveRoutines(self.get_feedback_ui(), AbspathInputUI(self))
 
     def get_shell(self, item) -> AbstractShell:
         raise NotImplementedError("3DCoat command does not support 'enter' at this time.")

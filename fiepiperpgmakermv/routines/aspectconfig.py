@@ -2,7 +2,7 @@ import typing
 import os
 import os.path
 
-from fiepipelib.assetaspect.routines.config import AutoConfigurationResult
+from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines,LocalPlatformUnixRoutines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipelib.assetaspect.data.simpleapplication import AbstractSimpleApplicationInstallsManager

@@ -1,4 +1,5 @@
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines, AutoConfigurationResult
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipeloosefiles.data.assetaspect import LooseFilesAspectConfiguration
 from fieui.FeedbackUI import AbstractFeedbackUI
 

@@ -10,13 +10,14 @@ from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
 from fiepipehoudini.data.installs import HoudiniInstall, HoudiniInstallsManager
 from fiepipehoudini.routines.houdini_paths import get_houdini_site_paths, get_houdini_job_paths
 from fiepipelib.applauncher.genericlauncher import listlauncher
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines, AutoConfigurationResult
-from fiepipelib.gitstorage.routines.gitasset import GitAssetRoutines
+from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
+from fiepipelib.gitstorage.routines.gitasset import GitAssetInteractiveRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAssetAspectConfiguration]):
 
-    def __init__(self, asset_routines: GitAssetRoutines):
+    def __init__(self, asset_routines: GitAssetInteractiveRoutines):
         asset_routines.load()
         asset_path = asset_routines.abs_path
         super(HoudiniAspectConfigurationRoutines, self).__init__(HoudiniAssetAspectConfiguration(asset_path),
@@ -131,7 +132,7 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
     async def _get_houdini_job_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()
-        fqdn = asset_routines.container.GetFQDN()
+        fqdn = asset_routines.container.get_fqdn()
         container_id = asset_routines._container_id
         root_id = asset_routines._root_id
         asset_id = asset_routines._asset_id
@@ -144,7 +145,7 @@ class HoudiniAspectConfigurationRoutines(AspectConfigurationRoutines[HoudiniAsse
     async def _get_houdini_site_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()
-        fqdn = asset_routines.container.GetFQDN()
+        fqdn = asset_routines.container.get_fqdn()
         container_id = asset_routines._container_id
         root_id = asset_routines._root_id
         asset_id = asset_routines._asset_id

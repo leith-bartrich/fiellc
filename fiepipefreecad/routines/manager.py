@@ -2,14 +2,14 @@ import pathlib
 import typing
 
 from fiepipefreecad.freecad import FreeCADLocalManager, FreeCAD, FromParameters
-from fiepipelib.locallymanagedtypes.routines.localmanaged import AbstractLocalManagedRoutines
+from fiepipelib.locallymanagedtypes.routines.localmanaged import AbstractLocalManagedInteractiveRoutines
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipelib.ui.abspath_input_ui import AbstractAbspathInputUI
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-class FreeCADLocalManagerRoutines(AbstractLocalManagedRoutines[FreeCAD]):
+class FreeCADLocalManagerInteractiveRoutines(AbstractLocalManagedInteractiveRoutines[FreeCAD]):
     _path_input_ui: AbstractAbspathInputUI = None
 
     def __init__(self, feedback_ui: AbstractFeedbackUI, path_input_ui: AbstractAbspathInputUI):
