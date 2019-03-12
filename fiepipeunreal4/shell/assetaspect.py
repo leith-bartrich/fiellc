@@ -1,7 +1,7 @@
 import typing
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
-from fiepipelib.assetaspect.shell.config import ConfigCommand
+from fiepipelib.assetaspect.routines.config import AssetAspectConfigurationRoutines
+from fiepipelib.assetaspect.shell.config import AssetConfigCommand
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
@@ -9,7 +9,7 @@ from fiepipeunreal4.data.installs import Unreal4InstallsManager
 from fiepipeunreal4.routines.assetaspect import UnrealAspectConfigurationRoutines
 
 
-class Unreal4AssetAspectCommand(ConfigCommand[UnrealAssetAspectConfiguration]):
+class Unreal4AssetAspectCommand(AssetConfigCommand[UnrealAssetAspectConfiguration]):
 
     def get_plugin_names_v1(self) -> typing.List[str]:
         ret = super(Unreal4AssetAspectCommand, self).get_plugin_names_v1()

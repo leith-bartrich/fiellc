@@ -1,6 +1,6 @@
 import typing
 
-from fiepipelib.assetaspect.shell.config import ConfigCommand
+from fiepipelib.assetaspect.shell.config import AssetConfigCommand
 from fiepipelib.git.routines.ignore import CheckCreateIgnore, AddIgnore
 from fiepipelib.git.routines.lfs import Track, InstallLFSRepo, AddGitAttributes
 from fiepipelib.shells.ui.fileext_input_ui import FileExtInputUI
@@ -8,7 +8,7 @@ from fiepipeloosefiles.data.assetaspect import LooseFilesAspectConfiguration
 from fiepipeloosefiles.routines.assetaspect import LooseFilesAspectConfigurationRoutines
 
 
-class LooseFilesAspectConfigCommand(ConfigCommand[LooseFilesAspectConfiguration]):
+class LooseFilesAspectConfigCommand(AssetConfigCommand[LooseFilesAspectConfiguration]):
 
     def get_plugin_names_v1(self) -> typing.List[str]:
         ret = super(LooseFilesAspectConfigCommand, self).get_plugin_names_v1()

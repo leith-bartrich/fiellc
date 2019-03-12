@@ -1,9 +1,9 @@
 import typing
 
-from fiepipelib.assetaspect.data.config import AspectConfiguration
+from fiepipelib.assetaspect.data.config import AssetAspectConfiguration
 
 
-class RPGMakerMVAspectConfiguration(AspectConfiguration):
+class RPGMakerMVAspectConfiguration(AssetAspectConfiguration):
 
     def get_config_name(self) -> str:
         return "rpg_maker_mv"

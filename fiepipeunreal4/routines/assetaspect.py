@@ -3,7 +3,7 @@ import os.path
 import pathlib
 import typing
 
-from fiepipelib.assetaspect.routines.config import AspectConfigurationRoutines
+from fiepipelib.assetaspect.routines.config import AssetAspectConfigurationRoutines
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
 from fiepipeunreal4.data.installs import Unreal4Install
@@ -13,7 +13,7 @@ from fiepipelib.gitstorage.routines.gitasset import GitAssetInteractiveRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-class UnrealAspectConfigurationRoutines(AspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
+class UnrealAspectConfigurationRoutines(AssetAspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
 
     def __init__(self, asset_routines:GitAssetInteractiveRoutines):
         asset_routines.load()

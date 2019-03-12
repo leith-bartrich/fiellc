@@ -2,10 +2,10 @@ import typing
 
 import pkg_resources
 
-from fiepipelib.assetaspect.data.config import AspectConfiguration
+from fiepipelib.assetaspect.data.config import AssetAspectConfiguration
 
 
-class LooseFilesAspectConfiguration(AspectConfiguration):
+class LooseFilesAspectConfiguration(AssetAspectConfiguration):
 
     def __init__(self, asset_path: str):
         super().__init__(asset_path)

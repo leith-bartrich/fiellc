@@ -2,11 +2,11 @@ import typing
 
 from fiepipehoudini.data.git import get_asset_ignores, get_project_ignores, get_asset_lfs_tracks, \
     get_project_lfs_tracks
-from fiepipelib.assetaspect.data.config import AspectConfiguration
+from fiepipelib.assetaspect.data.config import AssetAspectConfiguration
 from fiepipecommonfiletypes.data.lfs_tracked_patterns import get_image_extensions, get_3d_extensions, get_video_extensions,get_audio_extensions, extensions_to_lfs_patterns
 
 
-class HoudiniAssetAspectConfiguration(AspectConfiguration):
+class HoudiniAssetAspectConfiguration(AssetAspectConfiguration):
     _project_dirs: typing.List[str] = None
 
     def __init__(self, asset_path: str):

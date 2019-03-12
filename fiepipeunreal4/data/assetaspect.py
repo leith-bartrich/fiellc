@@ -1,9 +1,9 @@
 import typing
 
-from fiepipelib.assetaspect.data.config import AspectConfiguration
+from fiepipelib.assetaspect.data.config import AssetAspectConfiguration
 from fiepipeunreal4.data.git import get_asset_ignore_patterns,get_asset_lfs_track_patterns,get_project_ignore_patterns,get_project_lfs_track_patterns
 
-class UnrealAssetAspectConfiguration(AspectConfiguration):
+class UnrealAssetAspectConfiguration(AssetAspectConfiguration):
     _project_files: typing.List[str] = None
 
     def __init__(self, asset_path: str):
