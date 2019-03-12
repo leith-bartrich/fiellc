@@ -26,6 +26,8 @@ import fiepipelib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
+from fiellclib.mr_project.shell.root_config import MRProjectConfigShell
+from fiepipelib.gitstorage.shells.gitroot import Shell as GitRootShell
 from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
 from fiepiperpgmakermv.shell.aspectconfig import RPGMakerMVAspectConfigurationCommand
 from fiepiperpgmakermv.shell.installs import RPGMakerMVInstallsCommand
@@ -76,6 +78,10 @@ def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
     shell.add_submenu(fiepipehoudini.shell.assetaspect.HoudiniAssetAspectCommand(shell), "houdini", [])
     shell.add_submenu(LooseFilesAspectConfigCommand(shell), "loose_files", [])
     shell.add_submenu(RPGMakerMVAspectConfigurationCommand(shell), "rpg_maker_mv", [])
+
+
+def GitRootShellPlugin(shell: GitRootShell):
+    shell.add_submenu(MRProjectConfigShell(shell), "mr_project", [])
 
 
 # plugins for all representations commands

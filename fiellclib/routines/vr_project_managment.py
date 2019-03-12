@@ -1,16 +1,18 @@
 import typing
 
+from fiellclib.mr_project.data.root_config import MRProjectConfig
 from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipelib.assetstructure.routines.structure import AbstractDirPath, StaticSubDir, \
     AbstractDesktopProjectRootBasePath, AbstractAssetBasePath, AbstractDesktopProjectAssetBasePath, \
     GenericAssetBasePathsSubDir
+from fiepipelib.automanager.data.localconfig import LegalEntityConfig
+from fiepipelib.container.local_config.data.automanager import ContainerAutomanagerConfigurationComponent
 from fiepipelib.enum import get_worse_enum
-from fiepipelib.gitstorage.routines.gitroot import GitRootInteractiveRoutines
+from fiepipelib.gitstorage.routines.gitroot import GitRootRoutines
 from fiepiperpgmakermv.routines.aspectconfig import RPGMakerMVAspectConfigurationRoutines, RPGMakerMVAspectConfiguration
 from fieui.FeedbackUI import AbstractFeedbackUI
-from fiepipelib.automanager.data.localconfig import LegalEntityConfig, ContainerConfig
-from fiepipelib.gitstorage.routines.gitroot import GitRootRoutines
+
 
 class MRDesignDocsAssetBasePath(AbstractDesktopProjectAssetBasePath):
 
@@ -241,7 +243,7 @@ class MRProjectDesktopRootBasePath(AbstractDesktopProjectRootBasePath):
     _distribution: DistributionPath = None
     _production: ProductionPath = None
 
-    def __init__(self, routines: GitRootInteractiveRoutines, gitlab_server_name: str):
+    def __init__(self, routines: GitRootRoutines, gitlab_server_name: str):
         super().__init__(gitlab_server_name, routines)
 
         self._development = DevelopmentPath(self)
@@ -272,7 +274,15 @@ class MRProjectDesktopRootBasePath(AbstractDesktopProjectRootBasePath):
     async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
         return AutoConfigurationResult.NO_CHANGES
 
-def automanage_structure(feedback_ui:AbstractFeedbackUI, root_id:str, container_config:ContainerConfig, legal_entity_config:LegalEntityConfig, gitlab_server:str):
-    root_routines = GitRootRoutines(container_config.GetContainerID(),root_id,feedback_ui)
+
+def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, container_id: str,
+                         container_config: ContainerAutomanagerConfigurationComponent,
+                         legal_entity_config: LegalEntityConfig, gitlab_server: str):
+    root_routines = GitRootRoutines(container_id, root_id, feedback_ui)
     root_routines.load()
-    #TODO: check for struct config and do automan
+    mr_project_config = MRProjectConfig(root_routines.get_local_repo_path())
+    if not mr_project_config.exists():
+        return
+    mr_project_config.load()
+    mr_project_structure = MRProjectDesktopRootBasePath(root_routines, gitlab_server)
+    # TODO: Do management!
