@@ -1,13 +1,13 @@
 import typing
 
-import fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand
-import fiepipelib.localuser.routines.localuser
+import fiepipedesktoplib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand
 from fiepipe3dcoat.routines.manager import CoatLocalManagerInteractiveRoutines
-from fiepipelib.shells.AbstractShell import AbstractShell
-from fiepipelib.shells.ui.abspath_input_ui import AbspathInputUI
+from fiepipedesktoplib.shells.AbstractShell import AbstractShell
+from fiepipedesktoplib.shells.ui.abspath_input_ui import AbspathInputUI
 
 
-class CoatSystemCommand(fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand.LocalManagedTypeCommand):
+class CoatSystemCommand(
+    fiepipedesktoplib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand.LocalManagedTypeCommand):
 
     def get_routines(self) -> CoatLocalManagerInteractiveRoutines:
         return CoatLocalManagerInteractiveRoutines(self.get_feedback_ui(), AbspathInputUI(self))

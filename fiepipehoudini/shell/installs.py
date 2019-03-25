@@ -1,12 +1,11 @@
 import typing
 
-from fiepipelib.locallymanagedtypes.routines.localmanaged import AbstractLocalManagedInteractiveRoutines
-from fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand import LocalManagedTypeCommand
-from fiepipelib.shells.AbstractShell import AbstractShell
+from fiepipedesktoplib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand import LocalManagedTypeCommand
+from fiepipedesktoplib.shells.AbstractShell import AbstractShell
 from fiepipehoudini.data.installs import HoudiniInstall
 from fiepipehoudini.routines.installs import HoudiniInstallsInteractiveRoutines
-from fiepipelib.shells.ui.abspath_input_ui import AbspathInputDefaultUI
-from fiepipelib.shells.ui.subpath_input_ui import SubpathInputDefaultUI
+from fiepipedesktoplib.shells.ui.abspath_input_ui import AbspathInputDefaultUI
+from fiepipedesktoplib.shells.ui.subpath_input_ui import SubpathInputDefaultUI
 
 class HoudiniInstallsCommand(LocalManagedTypeCommand[HoudiniInstall]):
 

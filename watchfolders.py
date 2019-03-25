@@ -1,6 +1,6 @@
-from fiepipelib.gitstorage.shells.gitasset import Shell as AssetShell, ContainerIDVariableCommand, AssetIDVarCommand, \
+from fiepipedesktoplib.gitstorage.shells import Shell as AssetShell, ContainerIDVariableCommand, AssetIDVarCommand, \
     RootIDVarCommand
-from fiepipelib.watchfolder.shell.watchfolder import WatchFolderShellApplication as WatcherShell
+from fiepipedesktoplib.watchfolder.shell.watchfolder import WatchFolderShellApplication as WatcherShell
 
 _CONTAINER_ID = "9341cf7f-5f48-4971-aece-a5f203c23076"
 _ROOT_ID = "e00a2013-9041-4570-bc88-ac31bcd3e36e"

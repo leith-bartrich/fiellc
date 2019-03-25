@@ -1,16 +1,16 @@
-import fiepipelib.assetdata.shell
+import fiepipedesktoplib.assetdata.shell
 import fiepipefbxlib.data.common
-import fiepipelib.assetdata.shell.item
+import fiepipedesktoplib.assetdata.shell.item
 
 
-class ListShell(fiepipelib.assetdata.shell.item.ItemShell):
+class ListShell(fiepipedesktoplib.assetdata.shell.item.ItemShell):
     
     _list = None
     
     def GetList(self) -> fiepipefbxlib.data.common.FBXFileList:
         return _list
     
-    def __init__(self, gitAssetShell:fiepipelib.shells.gitasset.Shell, lst:fiepipefbxlib.data.common.FBXFileList):
+    def __init__(self, gitAssetShell:fiepipedesktoplib.shells.gitasset.Shell, lst:fiepipefbxlib.data.common.FBXFileList):
         self._list = lst
         super().__init__(gitAssetShell)
         
@@ -20,7 +20,7 @@ class ListShell(fiepipelib.assetdata.shell.item.ItemShell):
     def GetDataPromptCrumbText(self):
         return self.GetList().GetName()
 
-class ListsCommand(fiepipelib.assetdata.shell.item.AbstractNamedItemCommand):
+class ListsCommand(fiepipedesktoplib.assetdata.shell.item.AbstractNamedItemCommand):
     
     def getPluginNameV1(self):
         return "fbx_file_lists_command"

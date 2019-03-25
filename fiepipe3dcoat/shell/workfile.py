@@ -1,15 +1,15 @@
-import fiepipelib.assetdata.shell
+import fiepipedesktoplib.assetdata.shell
 import fiepipe3dcoat.data.workfile
 import fiepipe3dcoat.coat
-import fiepipelib.assetdata.shell.item
-import fiepipelib.fileversion.shell.assetdata
+import fiepipedesktoplib.assetdata.shell.item
+import fiepipedesktoplib.fileversion.shell.assetdata
 import fiepipelib.localplatform.routines.localplatform
 import fiepipelib.localuser.routines.localuser
 from fiepipelib.assetdata.data.connection import Connection, GetConnection
-from fiepipelib.gitstorage.shells.gitasset import Shell
+from fiepipedesktoplib.gitstorage.shells import Shell
 from fiepipelib.fileversion.data.fileversion import AbstractFileVersion
 
-class WorkFilesCommand(fiepipelib.assetdata.shell.item.AbstractNamedItemCommand):
+class WorkFilesCommand(fiepipedesktoplib.assetdata.shell.item.AbstractNamedItemCommand):
     
     def getPluginNamesV1(self):
         ret = super().getPluginNamesV1()
@@ -78,7 +78,7 @@ class WorkFilesCommand(fiepipelib.assetdata.shell.item.AbstractNamedItemCommand)
         return man.GetByName(name, conn)[0]
     
 
-class WorkFileShell(fiepipelib.assetdata.shell.item.ItemShell):
+class WorkFileShell(fiepipedesktoplib.assetdata.shell.item.ItemShell):
     
     _workFile = None
     
@@ -99,7 +99,7 @@ class WorkFileShell(fiepipelib.assetdata.shell.item.ItemShell):
         return self._workFile._name
     
 
-class WorkFileVerionsCommand(fiepipelib.fileversion.shell.assetdata.AbstractSingleFileVersionCommand):
+class WorkFileVerionsCommand(fiepipedesktoplib.fileversion.shell.assetdata.AbstractSingleFileVersionCommand):
     
     _workfileShell = None
     
@@ -253,7 +253,7 @@ class WorkFileVerionsCommand(fiepipelib.fileversion.shell.assetdata.AbstractSing
     
         
 
-class WorkFileVersionShell(fiepipelib.fileversion.shell.assetdata.AbstractSingleFileVersionShell):
+class WorkFileVersionShell(fiepipedesktoplib.fileversion.shell.assetdata.AbstractSingleFileVersionShell):
     
     _workfileShell = None
     

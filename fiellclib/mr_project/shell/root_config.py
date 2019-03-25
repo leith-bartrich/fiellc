@@ -2,7 +2,7 @@ import typing
 
 from fiellclib.mr_project.data.root_config import MRProjectConfig
 from fiellclib.mr_project.routines.root_config import MRProjectConfigRoutines
-from fiepipelib.rootaspect.shell.config import RootConfigCommand
+from fiepipedesktoplib.rootaspect.shell.config import RootConfigCommand
 
 
 class MRProjectConfigShell(RootConfigCommand[MRProjectConfig]):

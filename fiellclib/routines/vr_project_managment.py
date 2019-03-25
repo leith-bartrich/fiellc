@@ -4,8 +4,9 @@ from fiellclib.mr_project.data.root_config import MRProjectConfig
 from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipelib.assetstructure.routines.structure import AbstractDirPath, StaticSubDir, \
-    AbstractDesktopProjectRootBasePath, AbstractAssetBasePath, AbstractDesktopProjectAssetBasePath, \
-    GenericAssetBasePathsSubDir
+    AbstractAssetBasePath, GenericAssetBasePathsSubDir, AbstractPath
+from fiepipelib.assetstructure.routines.desktop import AbstractDesktopProjectAssetBasePath, \
+    AbstractDesktopProjectRootBasePath
 from fiepipelib.automanager.data.localconfig import LegalEntityConfig
 from fiepipelib.container.local_config.data.automanager import ContainerAutomanagerConfigurationComponent
 from fiepipelib.enum import get_worse_enum
@@ -14,20 +15,30 @@ from fiepiperpgmakermv.routines.aspectconfig import RPGMakerMVAspectConfiguratio
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-class MRDesignDocsAssetBasePath(AbstractDesktopProjectAssetBasePath):
+class MRDesignDocsAssetBasePath(AbstractDesktopProjectAssetBasePath['MRDesignDocsAssetBasePath']):
+    """Asset base-path for a typed Design Documents asset.
+    Currently a free-form space."""
 
-    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+    def get_sub_basepaths(self) -> typing.List["AbstractAssetBasePath"]:
+        return []
+
+    def get_subpaths(self) -> typing.List[AbstractPath]:
         return []
 
 
-class MRProductionAssetBasePath(AbstractDesktopProjectAssetBasePath):
+class MRProductionAssetBasePath(AbstractDesktopProjectAssetBasePath[AbstractAssetBasePath]):
 
-    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+    def get_sub_basepaths(self) -> typing.List["AbstractAssetBasePath"]:
+        return []
+
+    def get_subpaths(self) -> typing.List[AbstractPath]:
         return []
 
     def get_houdini_aspect(self) -> HoudiniAspectConfigurationRoutines:
         asset_routines = self.get_routines()
         return HoudiniAspectConfigurationRoutines(asset_routines)
+
+
 
     async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
         ret = AutoConfigurationResult.NO_CHANGES
@@ -285,4 +296,5 @@ def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, containe
         return
     mr_project_config.load()
     mr_project_structure = MRProjectDesktopRootBasePath(root_routines, gitlab_server)
+    print("MR PROJECT!")
     # TODO: Do management!

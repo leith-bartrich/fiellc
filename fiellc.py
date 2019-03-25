@@ -18,16 +18,16 @@ import fiepipefreecad.commands.manager
 import fiepipefreecad.templates.util
 import fiepipehoudini.shell.assetaspect
 import fiepipehoudini.shell.installs
-import fiepipelib.gitstorage.shells.gitasset
-import fiepipelib.legalentity.registry.shell.legal_entity
+import fiepipedesktoplib.gitstorage.shells.gitasset
+import fiepipedesktoplib.legalentity.registry.shell.legal_entity
 import fiepipelib.localplatform.routines.localplatform
 import fiepipelib.localuser.routines.localuser
-import fiepipelib.shells.fiepipe
+import fiepipedesktoplib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
 from fiellclib.mr_project.shell.root_config import MRProjectConfigShell
-from fiepipelib.gitstorage.shells.gitroot import Shell as GitRootShell
+from fiepipedesktoplib.gitstorage.shells.gitroot import Shell as GitRootShell
 from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
 from fiepiperpgmakermv.shell.aspectconfig import RPGMakerMVAspectConfigurationCommand
 from fiepiperpgmakermv.shell.installs import RPGMakerMVInstallsCommand
@@ -54,7 +54,7 @@ from fiepiperpgmakermv.shell.installs import RPGMakerMVInstallsCommand
 # when in doubt, assume an entity will opt-in to a plugin explicitly in its own plugin code.
 
 # plugins for fiepipe shell
-def FIEPipeShellPlugin(shell: fiepipelib.shells.fiepipe.Shell):
+def FIEPipeShellPlugin(shell: fiepipedesktoplib.shells.fiepipe.Shell):
     # freecad command
     shell.add_submenu(fiepipefreecad.commands.manager.FreeCADSystemCommand(), "freecad", [])
     # 3dcoat command
@@ -68,7 +68,7 @@ def FIEPipeShellPlugin(shell: fiepipelib.shells.fiepipe.Shell):
 
 
 # plugins for asset shell
-def GitAssetShellPlugin(shell: fiepipelib.gitstorage.shells.gitasset.Shell):
+def GitAssetShellPlugin(shell: fiepipedesktoplib.gitstorage.shells.gitasset.Shell):
     # freecad pard designs command
     # shell.AddSubmenu(fiepipefreecad.commands.asset.PartDesignsCommand(shell), 'freecad_partdesigns', ['fc_pd'])
     # 3DCoat work files command
@@ -164,7 +164,7 @@ def main():
     # rather have nice tab-completion help with that within the fiepipe system.
     platform = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
     user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(platform)
-    shell = fiepipelib.legalentity.registry.shell.legal_entity.LegalEntityShell(fqdn, user)
+    shell = fiepipedesktoplib.legalentity.registry.shell.legal_entity.LegalEntityShell(fqdn, user)
     shell.onecmd("lssh")
     # run until exited.
     shell.cmdloop()

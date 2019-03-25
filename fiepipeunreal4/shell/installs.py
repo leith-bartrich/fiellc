@@ -1,5 +1,5 @@
-from fiepipelib.assetaspect.shell.simpleapplication import AbstractSimpleApplicationCommand
-from fiepipelib.shells.ui.abspath_input_ui import AbspathInputDefaultUI
+from fiepipedesktoplib.assetaspect.shell.simpleapplication import AbstractSimpleApplicationCommand
+from fiepipedesktoplib.shells.ui.abspath_input_ui import AbspathInputDefaultUI
 from fiepipeunreal4.data.installs import Unreal4Install
 from fiepipeunreal4.routines.installs import Unreal4InstallsRoutines
 

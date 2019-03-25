@@ -1,16 +1,17 @@
-import fiepipelib.assetdata.shell.item
-import fiepipelib.filerepresentation.shell.item
-import fiepipelib.fileversion.shell.assetdata
-import fiepipelib.gitstorage.shells.gitasset
+import fiepipedesktoplib.assetdata.shell.item
+import fiepipedesktoplib.filerepresentation.shell.item
+import fiepipedesktoplib.fileversion.shell.assetdata
+import fiepipedesktoplib.gitstorage.shells.gitasset
 import fiepipefreecad.data.partdesign
 import pathlib
 import os
 import os.path
 import fiepipefreecad.commands.manager
-import fiepipelib.assetdata.shell
+import fiepipedesktoplib.assetdata.shell
 import fiepipefreecad.scripts.util
-from fiepipelib.assetdata.data.items import AbstractItemsRelation,AbstractItemManager
-from fiepipelib.assetdata.data.connection import Connection, GetConnection
+from fiepipelib.assetdata.data.items import AbstractItemManager
+from fiepipelib.assetdata.data.connection import Connection
+
 
 def GetFreeCADFileExtension():
     return "FCStd"
@@ -28,7 +29,7 @@ def freecad_complete(text, line, begidx, endidx):
     return ret
 
 
-class AbstractFreeCADFileVersionsCommand(fiepipelib.fileversion.shell.assetdata.AbstractSingleFileVersionCommand):
+class AbstractFreeCADFileVersionsCommand(fiepipedesktoplib.fileversion.shell.assetdata.AbstractSingleFileVersionCommand):
         
     def GetFileExtension(self):
         return GetFreeCADFileExtension()
@@ -93,7 +94,7 @@ class AbstractFreeCADFileVersionsCommand(fiepipelib.fileversion.shell.assetdata.
         freecad.LaunchInteractive(filepaths=[version.GetAbsolutePath()])
 
 
-class PartDesignsCommand(fiepipelib.assetdata.shell.item.AbstractNamedItemCommand):
+class PartDesignsCommand(fiepipedesktoplib.assetdata.shell.item.AbstractNamedItemCommand):
 
     def getPluginNameV1(self):
         return "freecad_part_designs_command"
@@ -166,11 +167,11 @@ class PartDesignsCommand(fiepipelib.assetdata.shell.item.AbstractNamedItemComman
         return manager.GetByName(name, conn)[0]
         
 
-class PartDesignShell(fiepipelib.assetdata.shell.item.ItemShell):
+class PartDesignShell(fiepipedesktoplib.assetdata.shell.item.ItemShell):
     
     _partDesign = None
     
-    def __init__(self, gitAssetShell: fiepipelib.gitstorage.shells.gitasset.Shell, partDesign:fiepipefreecad.data.partdesign.PartDesign):
+    def __init__(self, gitAssetShell: fiepipedesktoplib.gitstorage.shells.gitasset.Shell, partDesign:fiepipefreecad.data.partdesign.PartDesign):
         self._partDesign = partDesign
         super().__init__(gitAssetShell)
         self.AddSubmenu(PartDesignVersionsCommand( gitAssetShell, self),
@@ -189,7 +190,7 @@ class PartDesignVersionsCommand(AbstractFreeCADFileVersionsCommand):
         
     _partDesignShell = None
     
-    def __init__(self, gitAssetShell: fiepipelib.gitstorage.shells.gitasset.Shell, partDesignShell:PartDesignShell):
+    def __init__(self, gitAssetShell: fiepipedesktoplib.gitstorage.shells.gitasset.Shell, partDesignShell:PartDesignShell):
         self._partDesignShell = partDesignShell
         self._templates = {}
         super().__init__(gitAssetShell)
@@ -340,7 +341,7 @@ class PartDesignVersionsCommand(AbstractFreeCADFileVersionsCommand):
         
         
 
-class PartDesignVersionShell(fiepipelib.fileversion.shell.assetdata.AbstractSingleFileVersionShell):
+class PartDesignVersionShell(fiepipedesktoplib.fileversion.shell.assetdata.AbstractSingleFileVersionShell):
     
     _partDesignShell = None
 
@@ -358,7 +359,7 @@ class PartDesignVersionShell(fiepipelib.fileversion.shell.assetdata.AbstractSing
     def GetBreadCrumbsText(self):
         return self.breadcrumbs_separator.join([self.GetAssetShell().get_prompt_text(), "fc_pd", self._version.GetFullName()])
 
-class RepresentationsCommand(fiepipelib.filerepresentation.shell.item.AbstractSingleFileRepresentationsCommand):
+class RepresentationsCommand(fiepipedesktoplib.filerepresentation.shell.item.AbstractSingleFileRepresentationsCommand):
     
     def getPluginNamesV1(self):
         ret = super().getPluginNamesV1()
@@ -394,7 +395,7 @@ class RepresentationsCommand(fiepipelib.filerepresentation.shell.item.AbstractSi
                                     self._versionShell._version.GetVersion(), conn)
         
         
-class RepresentationShell(fiepipelib.filerepresentation.shell.item.AbstractRepresentationShell):
+class RepresentationShell(fiepipedesktoplib.filerepresentation.shell.item.AbstractRepresentationShell):
     
     def __init__(self, partDesignVersionShell:PartDesignVersionShell, representation:fiepipefreecad.data.partdesign.Representation):
         super().__init__(partDesignVersionShell,representation)

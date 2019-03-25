@@ -1,4 +1,4 @@
-from fiepipelib.assetaspect.shell.simpleapplication import AbstractSimpleFiletypeConfigCommand
+from fiepipedesktoplib.assetaspect.shell.simpleapplication import AbstractSimpleFiletypeConfigCommand
 from fiepiperpgmakermv.data.aspectconfig import RPGMakerMVAspectConfiguration
 from fiepiperpgmakermv.routines.aspectconfig import RPGMakerMVAspectConfigurationRoutines
 

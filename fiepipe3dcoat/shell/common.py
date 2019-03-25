@@ -1,7 +1,6 @@
 import fiepipelib.localplatform.routines.localplatform
 import fiepipelib.localuser.routines.localuser
 import fiepipe3dcoat.coat
-import fiepipelib.assetdata.shell
 import fiepipelib.assetdata.data.items
 import fiepipe3dcoat.applink.standard
 

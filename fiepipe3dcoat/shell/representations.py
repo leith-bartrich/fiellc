@@ -1,20 +1,19 @@
 import fiepipe3dcoat.coat
-import fiepipelib.assetdata.shell
+import fiepipedesktoplib.assetdata.shell
 import fiepipe3dcoat.applink.standard
 import fiepipe3dcoat.shell.common
-import fiepipelib.assetdata.shell.item
-import fiepipelib.filerepresentation.shell.item
-import fiepipelib.versions.comparison
+import fiepipedesktoplib.assetdata.shell.item
+import fiepipedesktoplib.filerepresentation.shell.item
 import fiepipe3dcoat.routines.applink
 
-class CoatRepresentationsCommand(fiepipelib.assetdata.shell.item.ItemShell):
+class CoatRepresentationsCommand(fiepipedesktoplib.assetdata.shell.item.ItemShell):
     
     _representationsCommand = None
     
     def GetVersion(self):
         return self._representationsCommand.GetVersion()
     
-    def __init__(self, repCommand =fiepipelib.filerepresentation.shell.item.AbstractSingleFileRepresentationsCommand):
+    def __init__(self, repCommand =fiepipedesktoplib.filerepresentation.shell.item.AbstractSingleFileRepresentationsCommand):
         self._representationsCommand = repCommand
         super().__init__(repCommand.GetAssetShell())
         

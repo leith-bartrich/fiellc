@@ -1,9 +1,9 @@
 import typing
 
-from fiepipelib.assetaspect.shell.config import AssetConfigCommand
+from fiepipedesktoplib.assetaspect.shell.config import AssetConfigCommand
 from fiepipelib.git.routines.ignore import CheckCreateIgnore, AddIgnore
 from fiepipelib.git.routines.lfs import Track, InstallLFSRepo, AddGitAttributes
-from fiepipelib.shells.ui.fileext_input_ui import FileExtInputUI
+from fiepipedesktoplib.shells.ui.fileext_input_ui import FileExtInputUI
 from fiepipeloosefiles.data.assetaspect import LooseFilesAspectConfiguration
 from fiepipeloosefiles.routines.assetaspect import LooseFilesAspectConfigurationRoutines
 

@@ -1,13 +1,13 @@
 import typing
 
-import fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand
-import fiepipelib.shells.AbstractShell
+import fiepipedesktoplib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand
 from fiepipefreecad.routines.manager import FreeCADLocalManagerInteractiveRoutines
-from fiepipelib.shells.AbstractShell import AbstractShell
-from fiepipelib.shells.ui.abspath_input_ui import AbspathInputUI
+from fiepipedesktoplib.shells.AbstractShell import AbstractShell
+from fiepipedesktoplib.shells.ui.abspath_input_ui import AbspathInputUI
 
 
-class FreeCADSystemCommand(fiepipelib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand.LocalManagedTypeCommand):
+class FreeCADSystemCommand(
+    fiepipedesktoplib.locallymanagedtypes.shells.AbstractLocalManagedTypeCommand.LocalManagedTypeCommand):
 
     def get_routines(self) -> FreeCADLocalManagerInteractiveRoutines:
         return FreeCADLocalManagerInteractiveRoutines(self.get_feedback_ui(), AbspathInputUI(self))
