@@ -1,7 +1,6 @@
 import os
 import os.path
 import pathlib
-import shlex
 import typing
 
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
@@ -9,7 +8,7 @@ from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
 from fiepipehoudini.data.installs import HoudiniInstall, HoudiniInstallsManager
 from fiepipehoudini.routines.houdini_paths import get_houdini_site_paths, get_houdini_job_paths
-from fiepipelib.applauncher.genericlauncher import listlauncher
+from fiepipedesktoplib.applauncher.genericlauncher import listlauncher
 from fiepipelib.assetaspect.routines.config import AssetAspectConfigurationRoutines
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipelib.gitstorage.routines.gitasset import GitAssetInteractiveRoutines

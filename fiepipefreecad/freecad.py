@@ -1,5 +1,5 @@
 import fiepipelib.locallymanagedtypes.data.abstractmanager
-import fiepipelib.applauncher
+import fiepipedesktoplib.applauncher
 import os.path
 import subprocess
 
@@ -53,7 +53,7 @@ class FreeCAD(object):
         for fpath in filepaths:
             args.append(fpath)
             
-        launcher = fiepipelib.applauncher.genericlauncher.listlauncher(args)
+        launcher = fiepipedesktoplib.applauncher.genericlauncher.listlauncher(args)
         launcher.launch(echo=True)
         
     def ExecuteInConsoleMode(self, pythonPaths:list = [], modulesPaths:list = [], filepaths:list = [], block=True):

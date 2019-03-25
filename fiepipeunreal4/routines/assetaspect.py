@@ -7,7 +7,7 @@ from fiepipelib.assetaspect.routines.config import AssetAspectConfigurationRouti
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipeunreal4.data.assetaspect import UnrealAssetAspectConfiguration
 from fiepipeunreal4.data.installs import Unreal4Install
-from fiepipelib.applauncher.genericlauncher import listlauncher
+from fiepipedesktoplib.applauncher.genericlauncher import listlauncher
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines
 from fiepipelib.gitstorage.routines.gitasset import GitAssetInteractiveRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI

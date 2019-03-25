@@ -1,7 +1,7 @@
 import os.path
 
 import fiepipelib.locallymanagedtypes.data.abstractmanager
-import fiepipelib.applauncher
+import fiepipedesktoplib.applauncher
 import fiepipelib.localplatform.routines.localplatform
 import fiepipelib.localuser.routines.localuser
 
@@ -31,7 +31,7 @@ class coat(object):
         args = []
         args.append(self._path)
 
-        launcher = fiepipelib.applauncher.genericlauncher.listlauncher(args)
+        launcher = fiepipedesktoplib.applauncher.genericlauncher.listlauncher(args)
         launcher.launch(echo=True)
 
 

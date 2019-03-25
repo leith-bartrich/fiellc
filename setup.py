@@ -17,7 +17,7 @@ setup(
     url="http://www.fie.us",
     py_modules=["fiellc"],
     packages=["fiellclib"],
-    install_requires=["fiepipe"],
+    install_requires=["fiepipe","fiepipe_desktop"],
     entry_points={
         'fiepipe.plugin.shell.fiepipe.v1': 'fiellc = fiellc:FIEPipeShellPlugin',
         'fiepipe.plugin.shell.gitasset.v1': 'fiellc = fiellc:GitAssetShellPlugin',
