@@ -131,10 +131,10 @@ class HoudiniAspectConfigurationRoutines(AssetAspectConfigurationRoutines[Houdin
     async def _get_houdini_job_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()
-        fqdn = asset_routines.container.get_fqdn()
-        container_id = asset_routines._container_id
-        root_id = asset_routines._root_id
-        asset_id = asset_routines._asset_id
+        fqdn = asset_routines.container.GetFQDN()
+        container_id = asset_routines.container.GetID()
+        root_id = asset_routines.root.GetID()
+        asset_id = asset_routines.working_asset.GetAsset().GetID()
         job_paths = await get_houdini_job_paths(fqdn, container_id, root_id, asset_id, feedback_ui)
         if len(job_paths) >= 1:
             return job_paths[0]
@@ -144,10 +144,10 @@ class HoudiniAspectConfigurationRoutines(AssetAspectConfigurationRoutines[Houdin
     async def _get_houdini_site_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()
-        fqdn = asset_routines.container.get_fqdn()
-        container_id = asset_routines._container_id
-        root_id = asset_routines._root_id
-        asset_id = asset_routines._asset_id
+        fqdn = asset_routines.container.GetFQDN()
+        container_id = asset_routines.container.GetID()
+        root_id = asset_routines.root.GetID()
+        asset_id = asset_routines.working_asset.GetAsset().GetID()
         site_paths = await get_houdini_site_paths(fqdn, container_id, root_id, asset_id, feedback_ui)
         if len(site_paths) >= 1:
             return site_paths[0]
