@@ -135,6 +135,6 @@ class Unreal4AssetAspectCommand(AssetConfigCommand[UnrealAssetAspectConfiguratio
 
         routines = self.get_configuration_routines()
         routines.load()
-        routines.open_in_ueditor(args[0], unreal_install)
+        self.do_coroutine(routines.open_in_ueditor_routine(self.get_feedback_ui(),args[0], unreal_install))
 
 

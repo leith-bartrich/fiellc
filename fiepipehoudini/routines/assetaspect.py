@@ -128,6 +128,9 @@ class HoudiniAspectConfigurationRoutines(AssetAspectConfigurationRoutines[Houdin
 
         return ret
 
+    async def get_houdini_env(self, install:HoudiniInstall, feedback_ui:AbstractFeedbackUI) -> typing.Dict[str,str]:
+        return await self._get_houdini_env(install,feedback_ui)
+
     async def _get_houdini_job_path(self, install:HoudiniInstall, feedback_ui: AbstractFeedbackUI) -> str:
         asset_routines = self.get_asset_routines()
         asset_routines.load()

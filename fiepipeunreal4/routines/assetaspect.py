@@ -11,7 +11,7 @@ from fiepipedesktoplib.applauncher.genericlauncher import listlauncher
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines, LocalPlatformWindowsRoutines
 from fiepipelib.gitstorage.routines.gitasset import GitAssetInteractiveRoutines
 from fieui.FeedbackUI import AbstractFeedbackUI
-
+from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
 
 class UnrealAspectConfigurationRoutines(AssetAspectConfigurationRoutines[UnrealAssetAspectConfiguration]):
 
@@ -32,11 +32,11 @@ class UnrealAspectConfigurationRoutines(AssetAspectConfigurationRoutines[UnrealA
     def find_uproject_files(self) -> typing.List[str]:
         """Finds .uproject files in the asset on disk.  Return relative paths."""
         found = []
-        for root, dirs, files in os.walk(self._asset_path):
+        for root, dirs, files in os.walk(self.get_asset_path()):
             for file in files:
                 base, ext = os.path.splitext(file)
                 if ext == ".uproject":
-                    found.append(os.path.relpath(os.path.join(root, file), self._asset_path))
+                    found.append(os.path.relpath(os.path.join(root, file), self.get_asset_path()))
         return found
 
 
@@ -60,7 +60,7 @@ class UnrealAspectConfigurationRoutines(AssetAspectConfigurationRoutines[UnrealA
         if uproject_file_path in project_files:
             project_files.remove(uproject_file_path)
 
-    def open_in_ueditor(self, uproject_file_path: str, unreal_install: Unreal4Install):
+    async def open_in_ueditor_routine(self, feedback_ui:AbstractFeedbackUI, uproject_file_path: str, unreal_install: Unreal4Install):
         """Opens the given uproject in ueditor"""
         args = []
         unreal_engine_path = unreal_install.get_path()
@@ -71,8 +71,12 @@ class UnrealAspectConfigurationRoutines(AssetAspectConfigurationRoutines[UnrealA
             raise NotImplementedError("Not currently implremented for non-windows platforms.")
         args.append(exepath)
 
-        uproject_abs_path = os.path.join(self._asset_path,uproject_file_path)
+        uproject_abs_path = os.path.join(self.get_asset_path(),uproject_file_path)
         args.append(uproject_abs_path)
 
-        launcher = listlauncher(args)
+        houdini_aspect_routines = HoudiniAspectConfigurationRoutines(self.get_asset_routines())
+        default_houdini = houdini_aspect_routines.get_default_houdini()
+        houdini_env = await houdini_aspect_routines.get_houdini_env(default_houdini,feedback_ui)
+
+        launcher = listlauncher(args,extra_env=houdini_env)
         launcher.launch()
