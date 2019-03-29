@@ -1,12 +1,13 @@
 import abc
 import typing
+import asyncio
 
 from fiellclib.mr_project.data.root_config import MRProjectConfig
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
 from fiepipelib.assetstructure.routines.desktop import AbstractDesktopProjectAssetBasePath, \
     AbstractDesktopProjectRootBasePath
 from fiepipelib.assetstructure.routines.structure import AbstractDirPath, StaticSubDir, \
-    AbstractAssetBasePath, GenericAssetBasePathsSubDir, AbstractPath, TABP
+    AbstractAssetBasePath, GenericAssetBasePathsSubDir, AbstractPath, TABP, AutoManageResults
 from fiepipelib.automanager.data.localconfig import LegalEntityConfig
 from fiepipelib.container.local_config.data.automanager import ContainerAutomanagerConfigurationComponent
 from fiepipelib.enum import get_worse_enum
@@ -328,7 +329,7 @@ class StoryInteractiveAssetBasePath(AbstractDesktopProjectAssetBasePath['MRStory
         return ret
 
 
-def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, container_id: str,
+async def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, container_id: str,
                          container_config: ContainerAutomanagerConfigurationComponent,
                          legal_entity_config: LegalEntityConfig, gitlab_server: str):
     root_routines = GitRootRoutines(container_id, root_id, feedback_ui)
@@ -338,5 +339,6 @@ def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, containe
         return
     mr_project_config.load()
     mr_project_structure = MRProjectDesktopRootBasePath(root_routines, gitlab_server)
-    print("MR PROJECT!")
-    # TODO: Do management!
+    await feedback_ui.output("Starting MR/AR/VR project automanagement...")
+    results = await mr_project_structure.automanager_routine(feedback_ui,legal_entity_config,container_config)
+    await feedback_ui.output("MR/AR/VR project automanagement results: " + results.name)
