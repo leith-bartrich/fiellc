@@ -164,7 +164,6 @@ def main():
     platform = fiepipelib.localplatform.routines.localplatform.get_local_platform_routines()
     user = fiepipelib.localuser.routines.localuser.LocalUserRoutines(platform)
     shell = fiepipedesktoplib.legalentity.registry.shell.legal_entity.LegalEntityShell(fqdn, user)
-    shell.onecmd("lssh")
     # run until exited.
     shell.cmdloop()
     # exited.

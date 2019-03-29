@@ -1,12 +1,12 @@
+import abc
 import typing
 
 from fiellclib.mr_project.data.root_config import MRProjectConfig
-from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
 from fiepipelib.assetaspect.routines.autoconf import AutoConfigurationResult
-from fiepipelib.assetstructure.routines.structure import AbstractDirPath, StaticSubDir, \
-    AbstractAssetBasePath, GenericAssetBasePathsSubDir, AbstractPath
 from fiepipelib.assetstructure.routines.desktop import AbstractDesktopProjectAssetBasePath, \
     AbstractDesktopProjectRootBasePath
+from fiepipelib.assetstructure.routines.structure import AbstractDirPath, StaticSubDir, \
+    AbstractAssetBasePath, GenericAssetBasePathsSubDir, AbstractPath, TABP
 from fiepipelib.automanager.data.localconfig import LegalEntityConfig
 from fiepipelib.container.local_config.data.automanager import ContainerAutomanagerConfigurationComponent
 from fiepipelib.enum import get_worse_enum
@@ -15,64 +15,13 @@ from fiepiperpgmakermv.routines.aspectconfig import RPGMakerMVAspectConfiguratio
 from fieui.FeedbackUI import AbstractFeedbackUI
 
 
-class MRDesignDocsAssetBasePath(AbstractDesktopProjectAssetBasePath['MRDesignDocsAssetBasePath']):
-    """Asset base-path for a typed Design Documents asset.
-    Currently a free-form space."""
+class DesignDocsTypeDir(
+    GenericAssetBasePathsSubDir['MRProjectDesktopRootBasePath', 'DesignDocsDir', 'LooseFilesAssetBasePath']):
+    """Design Documents Typed Asset Directory
+    root/development/design_docs/[typename]
 
-    def get_sub_basepaths(self) -> typing.List["AbstractAssetBasePath"]:
-        return []
-
-    def get_subpaths(self) -> typing.List[AbstractPath]:
-        return []
-
-
-class MRProductionAssetBasePath(AbstractDesktopProjectAssetBasePath[AbstractAssetBasePath]):
-
-    def get_sub_basepaths(self) -> typing.List["AbstractAssetBasePath"]:
-        return []
-
-    def get_subpaths(self) -> typing.List[AbstractPath]:
-        return []
-
-    def get_houdini_aspect(self) -> HoudiniAspectConfigurationRoutines:
-        asset_routines = self.get_routines()
-        return HoudiniAspectConfigurationRoutines(asset_routines)
-
-
-
-    async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
-        ret = AutoConfigurationResult.NO_CHANGES
-
-        houdini_aspect = self.get_houdini_aspect()
-        ret = get_worse_enum(ret, await houdini_aspect.auto_configure_routine(feedback_ui))
-
-        return ret
-
-
-class MRStoryInteractiveAssetBasePath(AbstractDesktopProjectAssetBasePath):
-
-    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
-        return []
-
-    def get_rpgmaker_aspect(self) -> RPGMakerMVAspectConfigurationRoutines:
-        asset_routines = self.get_routines()
-        asset_abs_path = asset_routines.abs_path
-        rpgmaker_conf = RPGMakerMVAspectConfiguration(asset_abs_path)
-        rpgmaker_aspect = RPGMakerMVAspectConfigurationRoutines(rpgmaker_conf, asset_routines)
-        return rpgmaker_aspect
-
-    async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
-        ret = AutoConfigurationResult.NO_CHANGES
-
-        rpgmaker_aspect = self.get_rpgmaker_aspect()
-        rpgmaker_resutls = await rpgmaker_aspect.auto_configure_routine(feedback_ui)
-
-        ret = get_worse_enum(ret, rpgmaker_resutls)
-
-        return ret
-
-
-class DesignDocsTypeDir(GenericAssetBasePathsSubDir[MRDesignDocsAssetBasePath]):
+    where typename is a high level asset or idea.  e.g. "character.john_doe" e.g. env.john_doe_home"
+    """
 
     def get_typename(self) -> str:
         return self.get_dirname()
@@ -80,14 +29,17 @@ class DesignDocsTypeDir(GenericAssetBasePathsSubDir[MRDesignDocsAssetBasePath]):
     def __init__(self, typename: str, parent_path: AbstractDirPath):
         super().__init__(typename, parent_path)
 
-    def get_asset_basepath_by_dirname(self, dirname: str, feedback_ui: AbstractFeedbackUI) -> MRDesignDocsAssetBasePath:
+    def get_asset_basepath_by_dirname(self, dirname: str) -> 'LooseFilesAssetBasePath':
         base_path = self.get_base_static_path()
-        assert isinstance(base_path, MRProjectDesktopRootBasePath)
         gitlab_server_name = base_path.get_gitlab_server_name()
-        return MRDesignDocsAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui, dirname))
+        return LooseFilesAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(dirname))
 
 
-class DesignDocsDir(StaticSubDir):
+class DesignDocsDir(StaticSubDir['MRProjectDesktopRootBasePath', 'DevelopmentPath']):
+    """
+    Design documents directory
+    root/development/design_docs
+    """
     _environments: DesignDocsTypeDir = None
     _characters: DesignDocsTypeDir = None
     _props: DesignDocsTypeDir = None
@@ -125,21 +77,29 @@ class DesignDocsDir(StaticSubDir):
         return self._vehicles
 
 
-class StoryInteractivePath(GenericAssetBasePathsSubDir[MRStoryInteractiveAssetBasePath]):
+class StoryInteractivePath(
+    GenericAssetBasePathsSubDir['MRProjectDesktopRootBasePath', 'StoryDir', 'MRStoryInteractiveAssetBasePath']):
+    """
+    Story Interactive assets directory path
+    root/development/story/interactive
+    """
 
     def __init__(self, parent_path: AbstractDirPath):
         super().__init__("interactive", parent_path)
 
-    def get_asset_basepath_by_dirname(self, dirname: str,
-                                      feedback_ui: AbstractFeedbackUI) -> MRStoryInteractiveAssetBasePath:
+    def get_asset_basepath_by_dirname(self, dirname: str) -> 'MRStoryInteractiveAssetBasePath':
         base_path = self.get_base_static_path()
         assert isinstance(base_path, MRProjectDesktopRootBasePath)
         gitlab_server_name = base_path.get_gitlab_server_name()
-        return MRStoryInteractiveAssetBasePath(gitlab_server_name,
-                                               self.get_asset_routines_by_dirname(feedback_ui, dirname))
+        return StoryInteractiveAssetBasePath(gitlab_server_name,
+                                             self.get_asset_routines_by_dirname(dirname))
 
 
-class StoryDir(StaticSubDir):
+class StoryDir(StaticSubDir['MRProjectDesktopRootBasePath', 'DevelopmentPath']):
+    """
+    Story subdir
+    root/development/story
+    """
     _interactive: StoryInteractivePath = None
 
     def __init__(self, parent_path: AbstractDirPath):
@@ -153,7 +113,9 @@ class StoryDir(StaticSubDir):
         return self._interactive
 
 
-class DevelopmentPath(StaticSubDir):
+class DevelopmentPath(StaticSubDir['MRProjectDesktopRootBasePath', 'MRProjectDesktopRootBasePath']):
+    """developmoent subdir
+    root/development"""
     _design_docs: DesignDocsDir = None
     _story: StoryDir = None
 
@@ -175,13 +137,24 @@ class DevelopmentPath(StaticSubDir):
         return self._design_docs
 
 
-class DistributionPath(StaticSubDir):
+class DistributionPath(StaticSubDir['MRProjectDesktopRootBasePath', 'MRProjectDesktopRootBasePath']):
+    """Distribution dir
+    root/distribution"""
 
     def __init__(self, parent_path: AbstractDirPath):
         super().__init__("distribution", parent_path)
 
 
-class ProductionTypeDir(GenericAssetBasePathsSubDir[MRProductionAssetBasePath]):
+class ProductionTypeDir(GenericAssetBasePathsSubDir['MRProjectDesktopRootBasePath', 'ProductionPath', TABP],
+                        typing.Generic[TABP], abc.ABC):
+    """A production type asset directory.
+    root/production/[typename]
+
+    where typename is a type of production asset. e.g. 'characters' or 'rigs' or 'houdini_rigs'
+
+    Generics TABP
+
+    TABP: the asset base type for assets in this directory: AbstractAssetBasePath"""
 
     def get_typename(self) -> str:
         return self.get_dirname()
@@ -189,60 +162,79 @@ class ProductionTypeDir(GenericAssetBasePathsSubDir[MRProductionAssetBasePath]):
     def __init__(self, typename: str, parent_path: AbstractDirPath):
         super().__init__(typename, parent_path)
 
-    def get_asset_basepath_by_dirname(self, dirname: str, feedback_ui: AbstractFeedbackUI) -> MRProductionAssetBasePath:
+class ProductionHoudiniProjectsPath(ProductionTypeDir['HoudiniAssetBasePath']):
+    """
+    Production Houdini Projects Directory
+    root/production/[name]
+
+    where name is an asset type.  e.g. houdini_characters or houdini_environments""
+    """
+
+    def get_asset_basepath_by_dirname(self, dirname: str) -> 'HoudiniAssetBasePath':
         base_path = self.get_base_static_path()
-        assert isinstance(base_path, MRProjectDesktopRootBasePath)
         gitlab_server_name = base_path.get_gitlab_server_name()
-        return MRProductionAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(feedback_ui, dirname))
+        return HoudiniAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(dirname))
 
 
-class ProductionUnrealProjectsPath(ProductionTypeDir):
+class ProductionUnrealProjectsPath(ProductionTypeDir['UnrealAssetBasePath']):
+    """
+    Production Unreal Projects Directory
+    root/production/unreal_projects
+    """
 
     def __init__(self, parent_path: AbstractDirPath):
         super().__init__("unreal_projects", parent_path)
 
+    def get_asset_basepath_by_dirname(self, dirname: str) -> 'UnrealAssetBasePath':
+        base_path = self.get_base_static_path()
+        gitlab_server_name = base_path.get_gitlab_server_name()
+        return UnrealAssetBasePath(gitlab_server_name, self.get_asset_routines_by_dirname(dirname))
 
-class ProductionPath(StaticSubDir):
-    _environments: ProductionTypeDir = None
-    _characters: ProductionTypeDir = None
-    _props: ProductionTypeDir = None
-    _vehicles: ProductionTypeDir = None
+
+class ProductionPath(StaticSubDir['MRProjectDesktopRootBasePath', 'MRProjectDesktopRootBasePath']):
+    """AR/VR/MR Production Directory
+    root/production"""
+
+    _houdini_environments: ProductionHoudiniProjectsPath = None
+    _houdini_characters: ProductionHoudiniProjectsPath = None
+    _houdini_props: ProductionHoudiniProjectsPath = None
+    _houdini_vehicles: ProductionHoudiniProjectsPath = None
 
     _unreal_projects: ProductionUnrealProjectsPath = None
 
     def __init__(self, parent_path: AbstractDirPath):
         super().__init__("production", parent_path)
 
-        self._environments = ProductionTypeDir("environments", self)
-        self.add_subpath(self._environments)
+        self._houdini_environments = ProductionHoudiniProjectsPath("houdini_environments", self)
+        self.add_subpath(self._houdini_environments)
 
-        self._characters = ProductionTypeDir("characters", self)
-        self.add_subpath(self._characters)
+        self._houdini_characters = ProductionHoudiniProjectsPath("houdini_characters", self)
+        self.add_subpath(self._houdini_characters)
 
-        self._props = ProductionTypeDir("props", self)
-        self.add_subpath(self._props)
+        self._houdini_props = ProductionHoudiniProjectsPath("houdini_props", self)
+        self.add_subpath(self._houdini_props)
 
-        self._vehicles = ProductionTypeDir("vehicles", self)
-        self.add_subpath(self._vehicles)
+        self._houdini_vehicles = ProductionHoudiniProjectsPath("houdini_vehicles", self)
+        self.add_subpath(self._houdini_vehicles)
 
         self._unreal_projects = ProductionUnrealProjectsPath(self)
         self.add_subpath(self._unreal_projects)
 
     @property
     def environments(self):
-        return self._environments
+        return self._houdini_environments
 
     @property
     def characters(self):
-        return self._characters
+        return self._houdini_characters
 
     @property
     def props(self):
-        return self._props
+        return self._houdini_props
 
     @property
     def vehicles(self):
-        return self._vehicles
+        return self._houdini_vehicles
 
     @property
     def unreal_projects(self):
@@ -250,40 +242,90 @@ class ProductionPath(StaticSubDir):
 
 
 class MRProjectDesktopRootBasePath(AbstractDesktopProjectRootBasePath):
+    """Root base path for a MR/VR/AR project."""
+
     _development: DevelopmentPath = None
     _distribution: DistributionPath = None
     _production: ProductionPath = None
+
+    _subpaths = None
 
     def __init__(self, routines: GitRootRoutines, gitlab_server_name: str):
         super().__init__(gitlab_server_name, routines)
 
         self._development = DevelopmentPath(self)
-        self.add_subpath(self._development)
-
         self._distribution = DistributionPath(self)
-        self.add_subpath(self._distribution)
-
         self._production = ProductionPath(self)
-        self.add_subpath(self._production)
 
-    def get_sub_basepaths(self, feedback_ui: AbstractFeedbackUI) -> typing.List["AbstractAssetBasePath"]:
+        self._subpaths = [self._development, self._distribution, self._production]
+
+    def get_subpaths(self) -> typing.List[AbstractPath]:
+        return self._subpaths.copy()
+
+    def get_sub_basepaths(self) -> typing.List["AbstractDesktopProjectAssetBasePath"]:
+
+        # for now, all asset providers are of type GenericAssetBasePathsSubDir
+
         ret = []
 
-        ret.extend(self._development.story.interactive.get_asset_basepaths(feedback_ui))
-        ret.extend(self._development.design_docs.environments.get_asset_basepaths(feedback_ui))
-        ret.extend(self._development.design_docs.characters.get_asset_basepaths(feedback_ui))
-        ret.extend(self._development.design_docs.props.get_asset_basepaths(feedback_ui))
-        ret.extend(self._development.design_docs.vehicles.get_asset_basepaths(feedback_ui))
-        ret.extend(self._production.environments.get_asset_basepaths(feedback_ui))
-        ret.extend(self._production.characters.get_asset_basepaths(feedback_ui))
-        ret.extend(self._production.props.get_asset_basepaths(feedback_ui))
-        ret.extend(self._production.vehicles.get_asset_basepaths(feedback_ui))
-        ret.extend(self._production.unreal_projects.get_asset_basepaths(feedback_ui))
-
+        all_subpaths = self.get_subpaths_recursive()
+        for subpath in all_subpaths:
+            if isinstance(subpath, GenericAssetBasePathsSubDir):
+                ret.extend(subpath.get_asset_basepaths())
         return ret
 
+
+class LooseFilesAssetBasePath(AbstractDesktopProjectAssetBasePath['LooseFilesAssetBasePath']):
+    """
+    A loose files asset for holding unstructured loose files.
+    """
+    pass
+
+
+class UnrealAssetBasePath(AbstractDesktopProjectAssetBasePath['UnrealAssetBasePath']):
+    """
+    An unreal asset for holding an unreal project
+    """
+    pass
+
+
+class HoudiniAssetBasePath(AbstractDesktopProjectAssetBasePath['HoudiniAssetBasePath']):
+    """
+    A houdini asset for holding a houdini project.
+    """
+    pass
+
+
+class StoryInteractiveAssetBasePath(AbstractDesktopProjectAssetBasePath['MRStoryInteractiveAssetBasePath']):
+    """
+    An asset for an interactive story design.
+
+    In practice this is either a RPGMaker or Unreal project.
+
+    root/development/story/interactive/[name]
+
+    Where name is an interactive story section/element/world/name e.g. "pirate_island" or "home_town_act_1"
+    """
+
+    def get_sub_basepaths(self) -> typing.List["AbstractAssetBasePath"]:
+        return []
+
+    def get_rpgmaker_aspect(self) -> RPGMakerMVAspectConfigurationRoutines:
+        asset_routines = self.get_routines()
+        asset_abs_path = asset_routines.abs_path
+        rpgmaker_conf = RPGMakerMVAspectConfiguration(asset_abs_path)
+        rpgmaker_aspect = RPGMakerMVAspectConfigurationRoutines(rpgmaker_conf, asset_routines)
+        return rpgmaker_aspect
+
     async def auto_configure_routine(self, feedback_ui: AbstractFeedbackUI) -> AutoConfigurationResult:
-        return AutoConfigurationResult.NO_CHANGES
+        ret = AutoConfigurationResult.NO_CHANGES
+
+        rpgmaker_aspect = self.get_rpgmaker_aspect()
+        rpgmaker_resutls = await rpgmaker_aspect.auto_configure_routine(feedback_ui)
+
+        ret = get_worse_enum(ret, rpgmaker_resutls)
+
+        return ret
 
 
 def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, container_id: str,
