@@ -15,17 +15,9 @@ def get_asset_ignores() -> typing.List[str]:
     return ret
 
 
-def get_project_ignores(project_path: str) -> typing.List[str]:
-    ret = []
-
-    return ret
 
 
 def get_asset_lfs_tracks() -> typing.List[str]:
     return get_all_extensions("*.")
 
 
-def get_project_lfs_tracks(project_path: str) -> typing.List[str]:
-    ret = []
-
-    return ret

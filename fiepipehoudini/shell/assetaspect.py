@@ -2,13 +2,11 @@ import os
 import os.path
 import typing
 
-import cmd2
-
+from fiepipedesktoplib.assetaspect.shell.config import AssetConfigCommand
 from fiepipehoudini.data.assetaspect import HoudiniAssetAspectConfiguration
 from fiepipehoudini.data.filetypes import get_hip_extensions
 from fiepipehoudini.data.installs import HoudiniInstallsManager
 from fiepipehoudini.routines.assetaspect import HoudiniAspectConfigurationRoutines
-from fiepipedesktoplib.assetaspect.shell.config import AssetConfigCommand
 from fiepipelib.localplatform.routines.localplatform import get_local_platform_routines
 from fiepipelib.localuser.routines.localuser import LocalUserRoutines
 
@@ -21,75 +19,15 @@ class HoudiniAssetAspectCommand(AssetConfigCommand[HoudiniAssetAspectConfigurati
         return ret
 
     def get_configuration_data(self) -> HoudiniAssetAspectConfiguration:
-        asset_routines = self.get_asset_shell().get_routines()
+        asset_routines = self.get_asset_routines()
         asset_routines.load()
         working_asset = asset_routines.working_asset
         path = working_asset.GetSubmodule().abspath
         return HoudiniAssetAspectConfiguration(path)
 
     def get_configuration_routines(self) -> HoudiniAspectConfigurationRoutines:
-        asset_routines = self.get_asset_shell().get_routines()
+        asset_routines = self.get_asset_routines()
         return HoudiniAspectConfigurationRoutines(asset_routines)
-
-    complete_add_project = cmd2.Cmd.path_complete
-
-    def do_add_project(self, args):
-        """Adds a houdini project to the configuration for this asset and sets it up for GIT tracking.
-
-        Usage: add_project [project_path]
-
-        project_path:  A relative path to a houdini project directory.
-        """
-        args = self.parse_arguments(args)
-
-        if len(args) == 0:
-            self.perror("No project_path given.")
-            return
-
-        routines = self.get_configuration_routines()
-        routines.load()
-        routines.add_project(args[0])
-        routines.commit()
-
-    def configured_projects_complete(self, text, line, begidx, endidx):
-        ret = []
-        routines = self.get_configuration_routines()
-        routines.load()
-        project_files = routines.get_project_dirs()
-        for project_file in project_files:
-            if project_file.startswith(text):
-                ret.append(project_file)
-        return ret
-
-    complete_remove_project = configured_projects_complete
-
-    def do_remove_project(self, args):
-        """Removes a houdini project from the configuration for this asset and removes it from GIT tracking.
-
-        Usage: remove_project [project_path]
-
-        project_path:  A registered project in the configuration.
-        """
-        args = self.parse_arguments(args)
-
-        if len(args) == 0:
-            self.perror("No project_path given.")
-            return
-
-        routines = self.get_configuration_routines()
-        routines.load()
-        routines.remove_project_dir(args[0])
-
-    def do_list_projects(self, args):
-        """Prints a list of projects in the configuration for this asset.
-
-        Usage: list_projects
-        """
-        routines = self.get_configuration_routines()
-        routines.load()
-        all_projects = routines.get_project_dirs()
-        for project_dir in all_projects:
-            self.poutput(project_dir)
 
     def houdini_install_complete(self, text, line, begidx, endidx):
         ret = []
@@ -168,7 +106,8 @@ class HoudiniAssetAspectCommand(AssetConfigCommand[HoudiniAssetAspectConfigurati
         routines = self.get_configuration_routines()
         routines.load()
 
-        self.do_coroutine(routines.batch_render_hip_files_routine(houdini, [args[1]], [args[2]], self.get_feedback_ui()))
+        self.do_coroutine(
+            routines.batch_render_hip_files_routine(houdini, [args[1]], [args[2]], self.get_feedback_ui()))
 
     def complete_hython_module(self, text, line, begidx, endidx):
         return self.index_based_complete(text, line, begidx, endidx, {1: self.houdini_install_complete})
@@ -203,5 +142,4 @@ class HoudiniAssetAspectCommand(AssetConfigCommand[HoudiniAssetAspectConfigurati
         routines = self.get_configuration_routines()
         routines.load()
 
-        self.do_coroutine(routines.run_hython_script_routine(houdini,module_name,py_args,self.get_feedback_ui()))
-
+        self.do_coroutine(routines.run_hython_script_routine(houdini, module_name, py_args, self.get_feedback_ui()))

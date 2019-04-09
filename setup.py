@@ -46,7 +46,7 @@ setup(
             'houdini = fiepipehoudini.routines.watchfolder_simplegeo:watch'
         ],
         'fiepipe.plugin.automanager.automanage_structure': [
-            'fiellc_vr_proj_man = fiellclib.routines.vr_project_managment:automanage_structure'
+            'fiellc_vr_proj_man = fiellclib.mr_project.routines.root_structure:automanage_structure'
         ],
 
     },

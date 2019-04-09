@@ -25,7 +25,7 @@ import fiepipedesktoplib.shells.fiepipe
 import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
-from fiellclib.mr_project.shell.root_config import MRProjectConfigShell
+from fiellclib.mr_project.shell.root_structure import MRProjectConfigShell
 from fiepipedesktoplib.gitstorage.shells.gitroot import Shell as GitRootShell
 from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
 from fiepiperpgmakermv.shell.aspectconfig import RPGMakerMVAspectConfigurationCommand
