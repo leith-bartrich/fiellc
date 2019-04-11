@@ -49,7 +49,7 @@ async def houdini_job_paths(fqdn: str, contaier_id: str, root_id: str,
     plat = get_local_platform_routines()
     user = LocalUserRoutines(plat)
 
-    asset_routines = GitAssetInteractiveRoutines(contaier_id, root_id, asset_id, feedback_ui)
+    asset_routines = GitAssetInteractiveRoutines(contaier_id, root_id, asset_id)
     asset_routines.load()
 
     asset_working_path = asset_routines.abs_path
