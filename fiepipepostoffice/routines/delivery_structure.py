@@ -11,7 +11,6 @@ from fiepipelib.enum import get_worse_enum
 from fiepipeloosefiles.routines.assetaspect import LooseFilesAspectConfigurationRoutines
 from fiepipeloosefiles.data.assetaspect import LooseFilesAspectConfiguration
 from fieui.FeedbackUI import AbstractFeedbackUI
-from fiepipelib.git.routines.submodules import
 
 class AbstractDelivery(AbstractAssetBasePath[BT]):
     _content: "Content" = None
@@ -65,7 +64,7 @@ class AbstractDelivery(AbstractAssetBasePath[BT]):
         #done
         return ret
 
-    async def commit_all_content(self, feedback_ui:AbstractFeedbackUI, messaage:str):
+    async def commit_all_content(self, feedback_ui:AbstractFeedbackUI, message:str):
         asset_routines = self.get_routines()
         working_asset = asset_routines.working_asset
         repo = working_asset.GetRepo()
