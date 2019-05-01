@@ -14,6 +14,7 @@ from fiepipepostoffice.data.aspect_config import PostOfficeConfiguration, Delive
 from fiepipelib.enum import get_worse_enum
 from fiepipepostoffice.data.box_aspect_config import BoxAspectConfig
 from fiepipepostoffice.data.delivery_aspect_config import DeliveryAspectConfig
+
 class PostOfficeApsectRoutines(RootAspectConfigurationRoutines[PostOfficeConfiguration]):
 
     def default_configuration(self):
@@ -206,6 +207,15 @@ class PostOfficeRootStructureRoutines(AbstractRootBasePath["PostOfficeRootStruct
         config = PostOfficeConfiguration(self.get_path())
         return PostOfficeApsectRoutines(config)
 
+    async def automanager_create_self(self, feedback_ui: AbstractFeedbackUI, entity_config: LegalEntityConfig,
+                                      container_config: ContainerAutomanagerConfigurationComponent) -> 'AutoCreateResults':
+        aspect_routines = self.get_aspect_routines()
+        if not aspect_routines.is_configured():
+            aspect_routines.default_configuration()
+            aspect_routines.commit()
+        return await super().automanager_create_self(feedback_ui, entity_config, container_config)
+
+
 class Boxes(GenericAssetBasePathsSubDir["PostOfficeRootStructureRoutines", "PostOfficeRootStructureRoutines", "Box"]):
 
     def get_asset_basepath_by_dirname(self, dirname: str) -> "Box":
@@ -255,6 +265,16 @@ class Box(AbstractAssetBasePath["Box"]):
 
     def get_subpaths(self) -> "typing.List[AbstractSubPath[Box]]":
         return [self._incoming, self._outgoing]
+
+    async def automanager_create_self(self, feedback_ui: AbstractFeedbackUI, entity_config: LegalEntityConfig,
+                                      container_config: ContainerAutomanagerConfigurationComponent) -> 'AutoCreateResults':
+        asset_routines = self.get_asset_routines()
+        box_config = BoxAspectConfig(asset_routines.abs_path)
+        aspect_routines = BoxAspectRoutines(box_config,asset_routines)
+        if not aspect_routines.is_configured():
+            aspect_routines.default_configuration()
+            aspect_routines.commit()
+        return await super().automanager_create_self(feedback_ui, entity_config, container_config)
 
 
 class Section(GenericAssetBasePathsSubDir[Box, Box, "Delivery"]):
@@ -418,6 +438,16 @@ class Delivery(AbstractAssetBasePath["Delivery"]):
         # so, we can delete.
         await asset_routines.deinit()
         return True, "Archived and deleted."
+
+    async def automanager_create_self(self, feedback_ui: AbstractFeedbackUI, entity_config: LegalEntityConfig,
+                                      container_config: ContainerAutomanagerConfigurationComponent) -> 'AutoCreateResults':
+        asset_routines = self.get_asset_routines()
+        delivery_config = DeliveryAspectConfig(asset_routines.abs_path)
+        delivery_aspect_routines = DeliveryAspectRoutines(delivery_config,asset_routines)
+        if not delivery_aspect_routines.is_configured():
+            delivery_aspect_routines.default_configuration()
+            delivery_aspect_routines.commit()
+        return await super().automanager_create_self(feedback_ui, entity_config, container_config)
 
 
 class Content(StaticSubDir[Delivery, Delivery]):
