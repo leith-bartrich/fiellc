@@ -16,14 +16,14 @@ class Unreal4AssetAspectCommand(AssetConfigCommand[UnrealAssetAspectConfiguratio
         return ret
 
     def get_configuration_data(self) -> UnrealAssetAspectConfiguration:
-        asset_routines = self.get_asset_shell().get_routines()
+        asset_routines = self.get_asset_shell().get_asset_routines()
         asset_routines.load()
         working_asset = asset_routines.working_asset
         path = working_asset.GetSubmodule().abspath
         return UnrealAssetAspectConfiguration(path)
 
     def get_configuration_routines(self) -> UnrealAspectConfigurationRoutines:
-        asset_routines = self.get_asset_shell().get_routines()
+        asset_routines = self.get_asset_shell().get_asset_routines()
         return UnrealAspectConfigurationRoutines(asset_routines)
 
     def uproject_files_disk_complete(self, text, line, begidx, endidx):

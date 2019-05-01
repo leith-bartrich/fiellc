@@ -22,7 +22,7 @@ class LooseFilesAspectConfigCommand(AssetConfigCommand[LooseFilesAspectConfigura
         return LooseFilesAspectConfiguration(asset_path)
 
     def get_configuration_routines(self) -> LooseFilesAspectConfigurationRoutines:
-        asset_routines = self.get_asset_shell().get_routines()
+        asset_routines = self.get_asset_shell().get_asset_routines()
         asset_routines.load()
         return LooseFilesAspectConfigurationRoutines(self.get_configuration_data(),asset_routines)
 

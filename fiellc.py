@@ -26,6 +26,7 @@ import fiepipeunreal4.shell.assetaspect
 # unreal4
 import fiepipeunreal4.shell.installs
 from fiellclib.mr_project.shell.root_structure import MRProjectConfigShell
+from fiepipepostoffice_desktop.shell.root_structure import PostOfficeCommand
 from fiepipedesktoplib.gitstorage.shells.gitroot import Shell as GitRootShell
 from fiepipeloosefiles.shell.assetaspect import LooseFilesAspectConfigCommand
 from fiepiperpgmakermv.shell.aspectconfig import RPGMakerMVAspectConfigurationCommand
@@ -81,6 +82,7 @@ def GitAssetShellPlugin(shell: fiepipedesktoplib.gitstorage.shells.gitasset.Shel
 
 def GitRootShellPlugin(shell: GitRootShell):
     shell.add_submenu(MRProjectConfigShell(shell), "mr_project", [])
+    shell.add_submenu(PostOfficeCommand(shell), "post_office", [])
 
 
 # plugins for all representations commands

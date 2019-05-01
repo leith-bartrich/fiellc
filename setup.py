@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -16,7 +16,7 @@ setup(
     keywords="pipeline,workflow,fiepipe",
     url="http://www.fie.us",
     py_modules=["fiellc"],
-    packages=["fiellclib"],
+    packages= find_packages(),
     install_requires=["fiepipe","fiepipe_desktop"],
     entry_points={
         'fiepipe.plugin.shell.fiepipe.v1': 'fiellc = fiellc:FIEPipeShellPlugin',
