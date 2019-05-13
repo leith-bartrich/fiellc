@@ -371,10 +371,10 @@ class Delivery(AbstractAssetBasePath["Delivery"]):
         repo = working_asset.GetRepo()
         add_output = repo.git.add("content")
         await feedback_ui.output(add_output)
-        commit_output = repo.git.commit(m="Adding and locking delivery content.")
-        await feedback_ui.output(commit_output)
         aspect_routines.get_configuration().set_locked(True)
         aspect_routines.commit()
+        commit_output = repo.git.commit(m="Adding and locking delivery content.")
+        await feedback_ui.output(commit_output)
 
     async def unlock_routine(self, feedback_ui: AbstractFeedbackUI):
         aspect_routines = self.get_aspect_routines()
@@ -415,7 +415,7 @@ class Delivery(AbstractAssetBasePath["Delivery"]):
         gitlab_asset_routines = self.get_gitlab_asset_routines()
         if not remote_exists:
             # push a new one if it doesn't exist
-            push_success = gitlab_asset_routines.push_sub_routine(feedback_ui, "master", True)
+            push_success = await gitlab_asset_routines.push_sub_routine(feedback_ui, "master", True)
             if not push_success:
                 return False, "Failed to push to remote: " + asset_routines.abs_path + " -> " + gitlab_asset_routines.get_remote_url()
         else:
@@ -429,14 +429,22 @@ class Delivery(AbstractAssetBasePath["Delivery"]):
                 return False, "Delivery isn't up to date.  Cannot archive and remove it: " + asset_routines.abs_path
 
             # push if need to
-            if is_behind_remote:
-                push_success = gitlab_asset_routines.push_sub_routine(feedback_ui, "master", True)
+            if is_ahead_of_remote:
+                push_success = await gitlab_asset_routines.push_sub_routine(feedback_ui, "master", True)
                 if not push_success:
                     return False, "Failed to push to remote: " + + asset_routines.abs_path + " -> " + gitlab_asset_routines.get_remote_url()
 
-        # if we get here, the remote exists and is up to date.  It is not ahead.  And it's not detached.
+            # it's possible the commit exists on remote, but the lfs objects do not. (prior run of standard push fails
+            # after commit but before lfs push is complete)
+            # we can't check this.  But we can do a git lfs push which is pretty well optimized.
+
+            await gitlab_asset_routines.push_lfs_objects_subroutine(feedback_ui,"master")
+
+        # if we get here, the remote exists and is up to date.  It is not ahead.  And it's not detached.  And it is not
+        # missing local LFS objects.
         # so, we can delete.
-        await asset_routines.deinit()
+        await asset_routines.delete_lfs_object_cache(feedback_ui)
+        await asset_routines.deinit(feedback_ui, force=True)
         return True, "Archived and deleted."
 
     async def automanager_create_self(self, feedback_ui: AbstractFeedbackUI, entity_config: LegalEntityConfig,

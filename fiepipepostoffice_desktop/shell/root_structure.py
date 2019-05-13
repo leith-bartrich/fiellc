@@ -9,7 +9,7 @@ from fiepipepostoffice.data.box_aspect_config import BoxAspectConfig
 from fiepipepostoffice.data.delivery_aspect_config import DeliveryAspectConfig
 from fiepipepostoffice.routines.root_structure import PostOfficeRootStructureRoutines, PostOfficeApsectRoutines, Box, \
     Section, BoxAspectRoutines, DeliveryAspectRoutines, Delivery
-
+from fiepipelib.git.routines.repo import RepoExists
 
 class PostOfficeCommand(StructureRootConfigCommand[PostOfficeConfiguration, PostOfficeRootStructureRoutines]):
     _boxes_command: "BoxesCommand" = None
@@ -155,6 +155,29 @@ class SectionCommand(
         Usage: new_delivery"""
         self.do_coroutine(self.get_structure_routines().create_new_delivery_routine(self.get_feedback_ui()))
 
+    def complete_checkout(self, text, line, begidx, endidx):
+        return self.asset_name_complete(text, line, begidx, endidx)
+
+    def do_checkout(self, args):
+        """Pulls down and checks out a delivery to the local storage.
+
+        usage: checkout [delivery]
+
+        arg delivery: the name of the delivery to checkout."""
+        args = self.parse_arguments(args)
+        if len(args) < 1:
+            self.perror("No delivery given.")
+            return
+
+        routines = self.get_structure_routines()
+        asset_routines = routines.get_asset_routines_by_dirname(args[0])
+        asset_routines.load()
+        abs_path = asset_routines.abs_path
+        if RepoExists(abs_path):
+            self.perror("Asset already exists at that path:" + abs_path)
+            return
+        self.do_coroutine(routines.checkout_by_dirname_routine(args[0], self.get_feedback_ui()))
+
 
 class DeliveryCommand(StructureAssetConfigCommand[DeliveryAspectConfig, Delivery]):
     _delivery: Delivery = None
@@ -181,3 +204,55 @@ class DeliveryCommand(StructureAssetConfigCommand[DeliveryAspectConfig, Delivery
 
     def get_structure_routines(self) -> Delivery:
         return self._delivery
+
+    def do_is_locked(self, args):
+        """Indicates if the delivery is locked.
+
+        Usage: is_locked"""
+        args = self.parse_arguments(args)
+        config = self.get_configuration_data()
+        if not config.exists():
+            self.perror("Delivery is not configured.")
+            return
+        config.load()
+        if config.get_locked():
+            self.poutput("Yes")
+            return
+        else:
+            self.poutput("No")
+            return
+
+    def do_commit_and_lock(self, args):
+        """Locks the delivery to prevent further changes.
+
+        Will error if already locked.
+
+        Usage: commit_and_lock
+        """
+        args = self.parse_arguments(args)
+        routines = self.get_structure_routines()
+        self.do_coroutine(routines.commit_and_lock_routine(self.get_feedback_ui()))
+
+    def do_unlock(self, args):
+        """Unlocks the delivery.  This should very rarely be done.  A delivery should typically be made once.
+
+        Usage: unlock"""
+        args = self.parse_arguments(args)
+        routines = self.get_structure_routines()
+        self.do_coroutine(routines.unlock_routine(self.get_feedback_ui()))
+
+    def do_archive_and_remove(self, args):
+        """Pushes a locked delivery to GitLab and then removes it from the local storage.
+        Upon succesful removal, will exit this command.
+
+        Errors if the push fails or the delivery isn't commited and locked.
+
+        Usage: archive_and_remove"""
+        args = self.parse_arguments(args)
+        routines = self.get_structure_routines()
+        (success, message) = self.do_coroutine(routines.archive_and_remove(self.get_feedback_ui()))
+        if not success:
+            self.perror(message)
+        else:
+            self.poutput(message)
+        return True
