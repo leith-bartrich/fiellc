@@ -221,7 +221,8 @@ class Boxes(GenericAssetBasePathsSubDir["PostOfficeRootStructureRoutines", "Post
     def get_asset_basepath_by_dirname(self, dirname: str) -> "Box":
         asset_routines = self.get_asset_routines_by_dirname(dirname)
         asset_routines.load()
-        return Box(asset_routines)
+        po_root_struct = self.get_base_static_path()
+        return Box(asset_routines,po_root_struct)
 
 
 class BoxAspectRoutines(AssetAspectConfigurationRoutines[BoxAspectConfig]):
@@ -460,3 +461,17 @@ class Delivery(AbstractAssetBasePath["Delivery"]):
 
 class Content(StaticSubDir[Delivery, Delivery]):
     pass
+
+async def automanage_structure(feedback_ui: AbstractFeedbackUI, root_id: str, container_id: str,
+                               container_config: ContainerAutomanagerConfigurationComponent,
+                               legal_entity_config: LegalEntityConfig, gitlab_server: str):
+    root_routines = GitRootRoutines(container_id, root_id)
+    root_routines.load()
+    post_office_config = PostOfficeConfiguration(root_routines.get_local_repo_path())
+    if not post_office_config.exists():
+        return
+    post_office_config.load()
+    post_office_structure = PostOfficeRootStructureRoutines(root_routines)
+    await feedback_ui.output("Starting Post Office structure automanagement...")
+    results = await post_office_structure.automanager_routine(feedback_ui, legal_entity_config, container_config)
+    await feedback_ui.output("Post Office structure automanagement results: " + results.name)
