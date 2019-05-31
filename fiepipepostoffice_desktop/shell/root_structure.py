@@ -158,25 +158,6 @@ class SectionCommand(
     def complete_checkout(self, text, line, begidx, endidx):
         return self.asset_name_complete(text, line, begidx, endidx)
 
-    def do_checkout(self, args):
-        """Pulls down and checks out a delivery to the local storage.
-
-        usage: checkout [delivery]
-
-        arg delivery: the name of the delivery to checkout."""
-        args = self.parse_arguments(args)
-        if len(args) < 1:
-            self.perror("No delivery given.")
-            return
-
-        routines = self.get_structure_routines()
-        asset_routines = routines.get_asset_routines_by_dirname(args[0])
-        asset_routines.load()
-        abs_path = asset_routines.abs_path
-        if RepoExists(abs_path):
-            self.perror("Asset already exists at that path:" + abs_path)
-            return
-        self.do_coroutine(routines.checkout_by_dirname_routine(args[0], self.get_feedback_ui()))
 
 
 class DeliveryCommand(StructureAssetConfigCommand[DeliveryAspectConfig, Delivery]):
